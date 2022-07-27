@@ -1,0 +1,20 @@
+\babel@toc {italian}{}\relax 
+\babel@toc {italian}{}\relax 
+\contentsline {chapter}{Summary}{2}{}%
+\contentsline {chapter}{\numberline {1}Ground robots? Maybe technology stack?}{3}{}%
+\contentsline {section}{\numberline {1.1}Pellentesque habitant morbi tristique senectus}{3}{}%
+\contentsline {section}{\numberline {1.2}Nullam et justo vitae nisi}{3}{}%
+\contentsline {chapter}{\numberline {2}Proin rhoncus a sapien in.}{3}{}%
+\contentsline {section}{\numberline {2.1}Cras in aliquam quam, et}{4}{}%
+\contentsline {subsection}{\numberline {2.1.1}Sed pulvinar placerat enim, a}{4}{}%
+\contentsline {section}{\numberline {2.2}Vivamus hendrerit imperdiet ex. Vivamus}{4}{}%
+\contentsline {chapter}{\numberline {3}Conclusioni}{4}{}%
+\contentsline {chapter}{Bibliografia}{4}{}%
+\contentsline {chapter}{\numberline {A}About the technology stack}{6}{}%
+\contentsline {section}{\numberline {A.1}ROS2}{6}{}%
+\contentsline {section}{\numberline {A.2}Gazebo}{6}{}%
+\contentsline {section}{\numberline {A.3}Navigation Stack, nav2}{6}{}%
+\contentsline {subsection}{\numberline {A.3.1}Sottotitolo}{6}{}%
+\contentsline {chapter}{\numberline {B}Titolo secondo allegato}{8}{}%
+\contentsline {section}{\numberline {B.1}Titolo}{8}{}%
+\contentsline {subsection}{\numberline {B.1.1}Sottotitolo}{8}{}%
