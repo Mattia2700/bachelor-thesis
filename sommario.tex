@@ -1,22 +1,54 @@
-\chapter*{Sommario} % senza numerazione
+\chapter*{Summary} % senza numerazione
 \label{sommario}
 
-\addcontentsline{toc}{chapter}{Sommario} % da aggiungere comunque all'indice
+\addcontentsline{toc}{chapter}{Summary} % da aggiungere comunque all'indice
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget.
+\section*{Introduction}
 
+The purpose of this project is to develop (developing?) a fullstack (?) system for surveillance proposes using mobile robots, both ground and flying ones.
+Since the project is quite big (?), it is shared with other two students with each one of us focusing into a specific subtask (?). It is constituted of: 
 
-  Sommario è un breve riassunto del lavoro svolto dove si descrive l'obiettivo, l'oggetto della tesi, le 
-metodologie e le tecniche usate, i dati elaborati e la spiegazione delle conclusioni alle quali siete arrivati.  
-
-Il sommario dell’elaborato consiste al massimo di 3 pagine e deve contenere le seguenti informazioni:
 \begin{itemize}
-  \item contesto e motivazioni 
-  \item breve riassunto del problema affrontato
-  \item tecniche utilizzate e/o sviluppate
-  \item risultati raggiunti, sottolineando il contributo personale del laureando/a
+  \item a planning system, responsible for dispatching the surveillance tasks to UGVs and/or UAVs in the best possible way based on their battery charge, giving them some waypoints to follow in order to follow the optimal path.
+  \item a solution to autonomously control the drones (UAVs robots)
+  \item a solution to autonomously control ground robots avoiding dynamic obstacles (UGVs robots)
 \end{itemize}
 
+Basically, all the work is done using ROS2\footnote{The Robot Operating System (ROS) is a set of software libraries and tools for building robot applications (https://docs.ros.org/en/foxy/index.html, 27/07)} which gives us the possibility to work separately on your own project, and since everyone creates his custom packages, at the end we only need to put everything together.
 
+A more detailed description can be found in the first chapter.
 
+The reason behind my choice about the internship and this consequent thesis is leaded by my growing interest in this topic: just some month before taking part in this work I attended a course about robotic fundamentals\footnote{Fondamenti di robotica (https://www.esse3.unitn.it/Guide/PaginaADErogata.do?ad\_er\_id=2021*N0*N0*S1*51102 *94282\&ANNO\_ACCADEMICO=2021\&mostra\_percorsi=S, 27/07)} in which I had to work in a custom project similar to this, but using a manipulator.
 
+For me, is the possibility to give to some inanimate object, like a wheeled robot or a manipulator, something that could be described as intelligence, the ability to perform some tasks in response of other ones, figuring out which ones are the best for every particular situation. Another aspect I really like is the (inbuilt) utility which carries (within) itself: this is only an educational project, but it is easy to imagine an industrial application, for example for patrol purposes. // ?
+
+Some challenges I decided to took are the choice of the new version of ROS, with some great improves respect to the older one, but with less community support, and working for the first time with a mobile robot.
+
+Sommario è un breve riassunto del lavoro svolto dove si descrive l'obiettivo, l'oggetto della tesi, le 
+metodologie e le tecniche usate, i dati elaborati e la spiegazione delle conclusioni alle quali siete arrivati.  
+
+% Il sommario dell’elaborato consiste al massimo di 3 pagine e deve contenere le seguenti informazioni:
+% \begin{itemize}
+%   \item contesto e motivazioni 
+%   \item breve riassunto del problema affrontato
+%   \item tecniche utilizzate e/o sviluppate
+%   \item risultati raggiunti, sottolineando il contributo personale del laureando/a
+% \end{itemize}
+
+% Tipo:
+% - descrizione tesi e interesse robotica
+% - far muovere robot in un ambiente seguendo le istruzioni ricevute ed evitando ostacoli non previsti
+% - ROS2, nav2, waypoint follower
+% - il robot si muove e fa foto
+
+\section*{Description of other students subtasks}
+
+What follows is a brief description of the work done by the other two students to have a better and clear idea of the workflow of the entire project.
+
+\subsection*{Planning system}
+
+To be done...
+
+\subsection*{Drones control}
+
+To be done...
