@@ -22,7 +22,18 @@
 \usepackage{titlesec} % per formato custom dei titoli dei capitoli
 
 % custom packages import
-% \usepackage[printonlyused,withpage]{acronym}
+\usepackage[acronym]{glossaries}
+
+\makenoidxglossaries
+\include{acronyms}
+
+\makeatletter
+{\catcode`\/=\active
+  \gdef\slashbreak{
+    \catcode`\/=\active
+    \def/{\char`\/\penalty\z@}}
+}
+\makeatother
 
 %%%%%%%%%%%%%%
 % supporto lettere accentate
@@ -36,6 +47,7 @@
 \usepackage[italian]{babel}
 
 \begin{document}
+% \begin{slashbreak}
 
   % nessuna numerazione
   \pagenumbering{gobble} 
@@ -84,8 +96,8 @@
     \begingroup
       % nessuna interruzione di pagina tra capitoli
       % ridefinizione dei comandi di clear page
-      \renewcommand{\cleardoublepage}{} 
-      \renewcommand{\clearpage}{} 
+      % \renewcommand{\cleardoublepage}{} 
+      % \renewcommand{\clearpage}{} 
       % redefinizione del formato del titolo del capitolo
       % da formato
       %   Capitolo X
@@ -101,7 +113,8 @@
       \titlespacing*{\subsection}{0pt}{0.10in}{0.02in}
       
       % sommario
-      \input{sommario}
+      % \input{chapter1}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Nota
@@ -123,9 +136,9 @@
       %
       % \input oppure \include
       %
-      \input{capitolo1}
-      \input{capitolo2}
-      \input{capitolo3}
+      \input{chapter1}
+      \input{chapter2}
+      \input{chapter3}
       %\input{capitolo4}
       
       
@@ -174,5 +187,7 @@
     \appendix
     \input{allegati}
     % \input{acronyms}
+    \printnoidxglossaries
 
+% \end{slashbreak}
 \end{document}

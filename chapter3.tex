@@ -1,0 +1,21 @@
+\chapter{Ground robot controls for the real world}
+\label{cha:realworld}
+
+When using a real environment, you need a real robot. In our department there is the one in Figure X.
+
+{\bf INSERT PIC HERE}
+
+The, so called, {\it \textbf {shelfino}} robot.
+
+\section{Shelfino setup}
+
+\subsection{Adapting existing code}
+
+The hardware interface was already developed by some research students in the last years, but they are no longer here. My first idea was to develop some ROS nodes that would connect to encoders, motors drivers and lidar, but I couldn't get so much information about brands or manifestations of the hardware.
+
+So I decided to use the existing code, but it was written using \Acrshort{ros1}, which uses its own old libraries, sadly no longer available in ROS2, since new and better ones are adopted.
+
+So I decided to adapt the code to ROS2, but I couldn't get it to work, mainly because some features was not implemented in the same way as they were originally in \Acrshort{ros1}. For example, in \Acrshort{ros1} there was a needing to include {\it C++ Boost Library} in order to use {\it shared pointers}, {\it mutex and lock} and some other features; later on, these libraries were included in the standard library, so there is no need to include them anymore.
+The problems come in when the included libraries are custom ones designed specifically for \Acrshort{ros1}, and not ported similarly in \Acrshort{ros2}, like {\bf Callback Queues}\footnote{Add more information}\cite{migrationguide}.
+
+Later on, after spending (some) hours trying to adapt the code with poor results, I decided to try another solution: using a \Acrshort{ros2} package called {\it ros1\_bridge}. Since both \Acrshort{ros1} and \Acrshort{ros2} use an own network to deliver messages, it is possible to use a node that listens to (?) both(?) and when something is received from one side, it is sent to the other one: in this way it is possible to run the existing code as it is on a \Acrshort{ros1} node, and interact with it from a \Acrshort{ros2} workspace.
