@@ -1,11 +1,83 @@
-\chapter{Titolo secondo allegato}
+\chapter{Required packages}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget. 
+The project depends on the following packages:
 
-\section{Titolo}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget. 
+\begin{itemize}
+    \item todo
+\end{itemize}
 
-\subsection{Sottotitolo}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget. 
+If you prefer you could use the following Dockerfile to create an image starting from Ubuntu 20.04 with the required packages:
+
+\begin{lstlisting}[language=Dockerfile]
+FROM osrf/ros:foxy-ros1-bridge
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Fix expired keys
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654
+
+
+RUN \
+  apt-get update && \
+  apt-get -y install apt-utils
+
+RUN \
+  apt-get -y install nano python3-pip libzmq3-dev
+
+# ROS1 dependencies for shelfino
+  
+RUN \
+  apt-get -y install ros-noetic-tf2-bullet \
+                     ros-noetic-grid-map-ros \
+                     ros-noetic-voxel-grid \
+                     ros-noetic-amcl \
+                     ros-noetic-costmap-2d \
+                     ros-noetic-map-server \
+                     ros-noetic-depthimage-to-laserscan \
+                     ros-noetic-slam-toolbox --fix-missing
+
+# ROS2 dependencies for current project
+
+RUN \
+  apt-get install -y python3-colcon-common-extensions \
+                     ros-foxy-test-msgs \
+                     ros-foxy-gazebo-ros-pkgs \
+                     ros-foxy-xacro \
+                     ros-foxy-joint-state-publisher-gui \
+                     ros-foxy-rqt-robot-steering \
+                     ros-foxy-nav2-bringup \
+                     ros-foxy-robot-localization \
+                     ros-foxy-lifecycle-msgs \
+                     ros-foxy-rviz2
+
+# ROS2 dependencies for planning
+
+RUN apt-get install -y \
+  python3-colcon-common-extensions \
+  ros-foxy-test-msgs \
+  ros-foxy-rosbridge-server \
+  ros-foxy-plansys2-*
+
+RUN apt-get install -y gdb # and more
+
+RUN sed -i 's/(ALL:ALL) ALL/(ALL) NOPASSWD: ALL/' /etc/sudoers # Enable sudo without password
+
+# Add user with home folder
+RUN useradd -ms /bin/bash -G sudo ros2
+USER ros2
+WORKDIR /home/ros2
+
+RUN echo 'alias noetic="source /opt/ros/noetic/setup.bash"' >> ~/.bashrc
+RUN echo 'alias foxy="source /opt/ros/foxy/setup.bash"' >> ~/.bashrc
+RUN echo 'alias rosplz1="source ./devel/setup.bash"' >> ~/.bashrc
+RUN echo 'alias rosplz2="source ./install/setup.bash"' >> ~/.bashrc
+
+RUN echo 'alias rosinstall="rosdep install -y -r -q --from-paths src --ignore-src --rosdistro foxy"' >> ~/.bashrc
+RUN echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> ~/.bashrc
+RUN echo "export GAZEBO_MODEL_PATH=~/workspace2/src/g_robot/models" >> ~/.bashrc
+
+ENTRYPOINT ["bash"]
+\end{lstlisting}
 
 
