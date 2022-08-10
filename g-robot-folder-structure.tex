@@ -1,0 +1,89 @@
+\newlength{\upBranch} % shift up the text  lines <<<<
+\setlength{\upBranch}{0.7ex} % 
+
+\newlength{\tolineSpace} % blank space bellow text  lines  <<<
+\setlength{\tolineSpace}{1mm}% 
+
+\makeatletter
+
+\xpatchcmd{\dirtree} % root
+{\vbox{\@nameuse{DT@body@1}}}
+{\raisebox{-\tolineSpace}{\vbox{\@nameuse{DT@body@1}}}}
+{}{}    
+
+\xpatchcmd{\dirtree} % below space
+{\advance\dimen\z@ by-\@nameuse{DT@lastlevel@\the\DT@countiv}\relax}
+{\advance\dimen\z@ by-\tolineSpace \advance\dimen\z@ by-\@nameuse{DT@lastlevel@\the\DT@countiv}\relax}
+{}{}
+    
+\xpatchcmd{\dirtree}% shift up the text  lines
+{\kern\DT@sep\box\z@\endgraf}
+{\kern\DT@sep\raisebox{-\upBranch}{\box\z@}\endgraf}
+{}{}    
+
+\makeatother
+
+\DTsetlength{1em}{1em}{0em}{0.4pt}{0.4pt}       
+
+%\setlength{\DTbaselineskip}{12pt}  % minimum size for \footnotesize 
+%\renewcommand{\DTstyle}{\rmfamily\footnotesize} 
+    
+%\setlength{\DTbaselineskip}{16pt}  %minimum size for \normalsize
+%\renewcommand{\DTstyle}{\rmfamily\normalsize} 
+
+\setlength{\DTbaselineskip}{18pt} %minimum size for  \large
+\renewcommand{\DTstyle}{\rmfamily\large}    %
+
+%\setlength{\DTbaselineskip}{22pt} %minimum size for  \Large
+%\renewcommand{\DTstyle}{\rmfamily\Large}   %      
+
+\setlength{\baselineskip}{30pt}
+
+\setlength{\DTbaselineskip}{12pt}  % minimum size for footnotesize 
+\renewcommand{\DTstyle}{\rmfamily\footnotesize}
+
+% \begin{document}
+
+\dirtree{%
+    .1 {\bf g\_robot}.
+    .2 { \bf config}.
+    .2 { \bf include}.
+    .2 { \bf launch}.
+    .3 { navigation.launch.py}.
+    .2 { \bf maps}.
+    .3 { currentMap.pgm}.
+    .3 { currentMap.yaml}.
+    .2 { \bf models}.
+    .3 { \bf g\_robot\_description}.
+    .4 { \bf meshes}.
+    .3 { model.config}.
+    .3 { model.sdf}.
+    .3 { \bf povo.model}.
+    .4 { \bf meshes}.
+    .4 { model.config}.
+    .4 { model.sdf}.
+    .3 { g\_robot\_v2.urdf}.
+    .2 { \bf params}.
+    .3 { nav2\_params.yaml}.
+    .2 { \bf rviz}.
+    .3 { nav2\_config\_sim.rviz}.
+    .3 { nav2\_config.rviz}.
+    .2 { \bf src}.
+    .2 { \bf worlds}.
+    .3 { povo.world}.
+}
+
+% \end{document}
+
+\DTsetlength{1em}{1em}{0em}{0.4pt}{0.4pt}       
+
+% \setlength{\DTbaselineskip}{1pt} %minimum size for  \large
+% \renewcommand{\DTstyle}{\rmfamily\large}    %
+
+%\setlength{\DTbaselineskip}{22pt} %minimum size for  \Large
+%\renewcommand{\DTstyle}{\rmfamily\Large}   %   
+
+\setlength{\baselineskip}{30pt}
+
+\setlength{\DTbaselineskip}{12pt}  % minimum size for footnotesize 
+\renewcommand{\DTstyle}{\rmfamily\footnotesize}
