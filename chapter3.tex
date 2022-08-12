@@ -2,8 +2,6 @@
 
 \label{cha:realworld}
 
-\def\code#1{\texttt{#1}}
-
 When using a real environment, you need a real robot. In our department there is the following one:
 
 {\bf INSERT PIC HERE}
@@ -12,6 +10,7 @@ When using a real environment, you need a real robot. In our department there is
   \centering
   \includegraphics[width=0.3\textwidth]{images/nav2\_architecture}
   \caption{The, so called, shelfino robot}
+  \label{fig:shelfino}
 \end{figure}
 
 
@@ -29,7 +28,8 @@ Later on, after spending (some) hours trying to adapt the code with poor results
 
 In order to run both \Acrshort{ros}1 and \Acrshort{ros}2 nodes on the same machine\footnote{or Docker container} I need the same version of Ubuntu. And since I need to use \Acrshort{ros}2 Foxy, that runs on Ubuntu 20.04, because of planning libraries, I have to use \Acrshort{ros}1 Noetic, but that code was written for the previous version\footnote{\Acrshort{ros}1 Noetic, for Ubuntu 18.04}: luckily, after installing the next version of the dependencies, there were no compatibility issues.
 
-\subsection{Existing code explained}
+\subsection{Existing nodes}
+\label{subsec:nodes}
 
 I created a specific launch file\footnote{A launch file is a file containing information about which nodes, eventually with some parameters, should be started when passed to {\it roslaunch} (\Acrshort{ros}1) or {\it ros2 launch} (\Acrshort{ros}2), instead of running each node singularly.}, in order to start the 3 required nodes\footnote{The bold text indicates a custom package; an italic one is a ROS-provided package}:
 
