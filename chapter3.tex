@@ -73,4 +73,4 @@ In other words, using the just described interface, it reads the data coming fro
 
 \subsubsection{odom\_node}
 
-This node makes use of the information received from the encorders (tick updates) and tracking camera topics, to calculate odometry, which represents the rotation and the translation of the robot from where it started. These new information are then published both as a message in a topic and as a transformation in the tf tree, the one between odom\_frame and base\_link, to describe the frame where the robot is. \\\\
+This node makes use of the information received from the encorders (tick updates) and tracking camera topics, to calculate odometry, which represents the rotation and the translation of the robot from where it started. These new information are then published both as a message in a topic and as a transformation in the tf tree, the one between \code{odom\_frame} and \code{base\_link}, to describe the frame where the robot is.
