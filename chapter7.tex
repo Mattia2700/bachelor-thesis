@@ -1,0 +1,17 @@
+\chapter{Future works}
+
+Here it is a possible list of missing features that can be implemented in the future:
+
+\begin{itemize}
+
+\item The main part left is the full integration with drones as it was designed originally. This is due to the fact that operating with \Acrshort{uav}s needs precise control in order to avoid collisions and before testing on a real drone, a quite expensive one, it is important to be sure that everything is working as expected.
+
+\item Also, this system for ground robots (?) has been tested only with one \textit{shelfino} robot, because it is the only one currently accessible via SSH\footnote{Sicure SHell, a protocol that let a host connects to another one on the same network and using its terminal shell}, needed to set up it. Once this issue is resolved, a multi-robot test could be performed: with Acrshort{Ros}2 using DDS (?), you can separate nodes running on a robot from those running on other robots. (?) % o "thanks to the fact that \Acrshort{ros}2 uses DDS (?), it is possible to separate running nodes on a robot from the same ones running on other robots" come era originariament
+
+\item Moreover, because of asynchronous development of each project, on the planning part was assumed that only \Acrshort{uav}s are capable of taking photos, even if it could be done also with \Acrshort{ugv}s: the implementation would be quite straightforward. From the specific actions designed for \Acrshort{ugv}s, only \code{movement} and \code{move\_with\_uav}\footnote{the code is the same} ones were implemented, as opposed to \code{battery\_managment} and \code{charge}, because both do not have the needed infrastructure.
+
+\item Another thing that it is possible to do, as soon it will be implemented on the planning system, is supporting live positioning: in this way also the user could have a real-time feedback in the web interface. Basically the only change consists on returning also the position of the robot (using the pose server described in \autoref{sub:pose}) alongside the current task completion percentage.
+
+\item Talking about the navigation part, the obstacle avoidance could be enhanced, especially in the case of dynamic obstacles, because the robot sometimes takes some time to figure out what is going on and could end up colliding with them. A possible workaround could be increasing the minimum distance that should be kept between the robot and the unexpected obstacle, with some recovery action, like going back and replanning the path. A problem could also be the \code{ros1\_bridge} that adds some delay when exchanging messages between \Acrshort{ros}1 and \Acrshort{ros}2, ending up receiving lidar data not instantaneously.
+
+\end{itemize}

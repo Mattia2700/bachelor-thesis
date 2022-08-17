@@ -48,6 +48,8 @@
 
 \usepackage{hyperref}
 
+\usepackage{chemarrow}
+
 \def\code#1{\texttt{#1}}
 
 \lstdefinelanguage{Dockerfile}
@@ -142,9 +144,9 @@
       \titleformat{\chapter}
         {\normalfont\Huge\bfseries}{\thechapter}{1em}{}
         
-      % \titlespacing*{\chapter}{0pt}{0.59in}{0.02in}
-      % \titlespacing*{\section}{0pt}{0.20in}{0.02in}
-      % \titlespacing*{\subsection}{0pt}{0.10in}{0.02in} 
+      \titlespacing*{\chapter}{0pt}{0.59in}{0.02in}
+      \titlespacing*{\section}{0pt}{0.20in}{0.02in}
+      \titlespacing*{\subsection}{0pt}{0.10in}{0.02in} 
       % Forse riattivare (?)
       
       % sommario
@@ -177,6 +179,7 @@
       \input{chapter4}
       \input{chapter5}
       \input{chapter6}
+      \input{chapter7}
       
     \endgroup
 
