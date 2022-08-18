@@ -1,14 +1,14 @@
 \chapter{Navigation}
 
-For the navigation part it has been used the \Acrshort{nav2} package, as described in \autoref{cha:techstack}. As said, the only thing necessary to do is passing a YAML config file to \code{navigation\_bringup.py} in order to start the desired nodes with the desired parameters set. It is easier said than done. (?)
+For the navigation part it has been used the \acrshort{nav2} package, as described in \autoref{cha:techstack}. As said, the only thing necessary to do is passing a YAML config file to \code{navigation\_bringup.py} in order to start the desired nodes with the desired parameters set. It is easier said than done. (?)
 
-\section{\Acrshort{nav2} nodes introduction}
+\section{\acrshort{nav2} nodes introduction}
 
-This is a brief description of the nodes responsible for the navigation, in order to have a better idea of the workflow, mostly thanks to \Acrshort{nav2} README files of the GitHub repository \cite{nav2github}.
+This is a brief description of the nodes responsible for the navigation, in order to have a better idea of the workflow, mostly thanks to \acrshort{nav2} README files of the GitHub repository \cite{nav2github}.
 
-\subsection*{Lifecycle Manager}
+\subsection{Lifecycle Manager}
 
-Lifecycle Manager harnesses the {\it managed nodes}\footnote{A managed life cycle for nodes allows greater control over the state of ROS system. [...] a managed node presents a known interface, executes according to a known life cycle state machine, and otherwise can be considered a black box \cite{lifecycle}.} \Acrshort{ros}2 concept to navigation stack: in such a manner, before nodes start executing, it checks if all of them were launched correctly and are ready, to avoid unexpected behavior. 
+Lifecycle Manager harnesses the {\it managed nodes}\footnote{A managed life cycle for nodes allows greater control over the state of ROS system. [...] a managed node presents a known interface, executes according to a known life cycle state machine, and otherwise can be considered a black box \cite{lifecycle}.} \acrshort{ros}2 concept to navigation stack: in such a manner, before nodes start executing, it checks if all of them were launched correctly and are ready, to avoid unexpected behavior. 
 
 \begin{figure}[h]
     \centering
@@ -25,36 +25,36 @@ Lifecycle Manager harnesses the {\it managed nodes}\footnote{A managed life cycl
     \end{minipage}
 \end{figure}
 
-\subsection*{Planner server}
+\subsection{Planner server}
 
 It implements behavior trees to compute path to pose, to which is possible to attach plugins.
 
-\subsection*{Controller server}
+\subsection{Controller server}
 
 It generates command velocities for the robot, using computed path from planner server.
 
-\subsection*{\Acrfull{slam}}
+\subsection{\acrfull{slam}}
 
 It is a collection of techniques used to localize and map the environment simultaneously, using 2D laser scans. Once the map is completely built, it is possible to save it to a file and pass it to the map server \cite{slam}.
 
-\subsection*{Map Server}
+\subsection{Map Server}
 
-This package is used to provide map functionalities to \Acrshort{ros}. Basically, it gives you the possibility to load a map from a file or save it after \Acrshort{slam} has been run.
+This package is used to provide map functionalities to \acrshort{ros}. Basically, it gives you the possibility to load a map from a file or save it after \acrshort{slam} has been run.
 
-\subsection*{Recoveries server}
+\subsection{Recoveries server}
 
 It is responsible for executing simple controlled robot movements, like backing up, rotating and stopping when recovery is needed.
 
-\subsection*{Waypoint Follower (?)} 
+\subsection{Waypoint Follower (?)} 
 
-In \Acrshort{rviz} is also implemented the possibility to navigate the robot between specified waypoints: after they have been set, a feedback is periodically returned, and when completed returns the missed waypoints. This functionality has not been used in the following chapter (cite (?)), but could be useful for other testing purposes.
+In \acrshort{rviz} is also implemented the possibility to navigate the robot between specified waypoints: after they have been set, a feedback is periodically returned, and when completed returns the missed waypoints. This functionality has not been used in the following chapter (cite (?)), but could be useful for other testing purposes.
 
-\subsection*{\Acrfull{amcl}}
+\subsection{\acrfull{amcl}}
 
-\Acrshort{amcl} is used to localize the robot on a known map using a 2D laser scanner probabilistically.
-. Firstly, once the map is loaded, the initial robot pose must be set\footnote{\Acrshort{rviz} lets you set the initial robot pose graphically.}: what is going on under the hood is publishing a \code{map} $\rightarrow$ \code{odom} transformation so that the \code{odom} $\rightarrow$ \code{base\_link} one leads to the real position of the robot.
+\acrshort{amcl} is used to localize the robot on a known map using a 2D laser scanner probabilistically.
+. Firstly, once the map is loaded, the initial robot pose must be set\footnote{\acrshort{rviz} lets you set the initial robot pose graphically.}: what is going on under the hood is publishing a \code{map} $\rightarrow$ \code{odom} transformation so that the \code{odom} $\rightarrow$ \code{base\_link} one leads to the real position of the robot.
 
-\subsection*{\Acrfull{btnav}}
+\subsection{\acrfull{btnav}}
 
 This one makes use of behavior trees to define the actions to be performed when the robot is in a certain state: for example, when no problem has met, it will continue to navigate and reach the current goal, but when it hits something, the behavior tree will execute the recovery action.
 
@@ -76,13 +76,13 @@ Everything required to navigating through the environment is provided by \code{g
 
 % TODO: sistemare folder structure (togliere v2 da urdf e aggiugnere "..." se una cartella contiene altri file; sistemare altezza lidar? 0.45 invece di 0.41 come su shelfino?)
 
-Regardless if the robot is real or simulated, there are always a \code{scan}, \code{odom} and \code{cmd\_vel} topic and a \code{map}, \code{odom} and \code{base\_link}\footnote{All the other links of the robot are connected to the root one, \code{base\_link} in this case} frame. What is still missing is a way to pass this information to \Acrshort{nav2} and here comes \code{g\_robot} package to the rescue.
+Regardless if the robot is real or simulated, there are always a \code{scan}, \code{odom} and \code{cmd\_vel} topic and a \code{map}, \code{odom} and \code{base\_link}\footnote{All the other links of the robot are connected to the root one, \code{base\_link} in this case} frame. What is still missing is a way to pass this information to \acrshort{nav2} and here comes \code{g\_robot} package to the rescue.
 
-First, it is important to make a clarification: the map currently used has been generated by the \Acrshort{slam} executed in the real environment and using it in a simulation with \Acrshort{amcl} can lead to strange behavior.
+First, it is important to make a clarification: the map currently used has been generated by the \acrshort{slam} executed in the real environment and using it in a simulation with \acrshort{amcl} can lead to strange behavior.
 
-Inside \code{\Acrshort{rviz}} folder there are two configuration files which are going to be loaded when the program executes: in the {\it \_real} one, only some link names are missing because they are no longer simulated and currently there is no way to get these data\footnote{These frame transformations}.
+Inside \code{\acrshort{rviz}} folder there are two configuration files which are going to be loaded when the program executes: in the {\it \_real} one, only some link names are missing because they are no longer simulated and currently there is no way to get these data\footnote{These frame transformations}.
 
-Folders like {\bf include} or {\bf src} are left even if empty in the project folder, because it is possible to integrate custom algorithms inside the \Acrlong{nav2}, thanks to \code{nav2\_core} package. The same applies for {\bf config} one, where you can put your own configuration files, how it was done originally when using \Acrfull{ekf} to estimate robot odemetry\footnote{Later removed because of its buggy behavior}.
+Folders like {\bf include} or {\bf src} are left even if empty in the project folder, because it is possible to integrate custom algorithms inside the \acrlong{nav2}, thanks to \code{nav2\_core} package. The same applies for {\bf config} one, where you can put your own configuration files, how it was done originally when using \acrfull{ekf} to estimate robot odemetry\footnote{Later removed because of its buggy behavior}.
 
 Inside the {\bf launch} folder there is the script used to start the entire navigation system; normally it launches the version with real environment and robot. Here follows a list of the possible arguments you can pass as $<$name$>$:=$<$value$>$ pairs: % (?)
 
@@ -91,8 +91,8 @@ Inside the {\bf launch} folder there is the script used to start the entire navi
 \begin{itemize}
     \item \arguments{use\_namespace}{whether to apply a namespace}
     \item \arguments{namespace}{actual namespace to use}
-    \item \arguments{autostart}{if \Acrshort{nav2} should be automatically started}
-    \item \arguments{slam}{whether to run \Acrshort{slam}}
+    \item \arguments{autostart}{if \acrshort{nav2} should be automatically started}
+    \item \arguments{slam}{whether to run \acrshort{slam}}
     \item \arguments{params\_file}{full path to parameters file to use for navigation nodes}
     \item \arguments{bt\_xml\_filename}{full path to the behavior tree xml file to use}
     \item \arguments{map}{full path to map file to load}
@@ -101,12 +101,12 @@ Inside the {\bf launch} folder there is the script used to start the entire navi
     \item \arguments{use\_sim\_time}{whether to use simulation (Gazebo) clock}
     \item \arguments{use\_robot\_state\_pub}{whether to start the robot joint state publisher}
     \item \arguments{world}{full path to the world model file to load}
-    \item \arguments{use\_rviz}{whether to start \Acrshort{rviz}}
+    \item \arguments{use\_rviz}{whether to start \acrshort{rviz}}
     \item \arguments{rviz\_config\_file}{full path to the RVIZ config file to use}
-    \item \arguments{model}{full path to robot urdf file for \Acrshort{rviz}}
+    \item \arguments{model}{full path to robot urdf file for \acrshort{rviz}}
 \end{itemize}
 
-If you want to start a simulation, just set {\bf use\_simulator} to {\it true} and change {\bf rviz\_config\_file} path; if you want to disable the \Acrfull{gui} of Gazebo, set also {\bf headless} to {\it true}.
+If you want to start a simulation, just set {\bf use\_simulator} to {\it true} and change {\bf rviz\_config\_file} path; if you want to disable the \acrfull{gui} of Gazebo, set also {\bf headless} to {\it true}.
 
 % parlare di velocità lineare e angolare
 % odom su simulazione

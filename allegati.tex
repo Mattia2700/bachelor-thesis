@@ -1,3 +1,25 @@
+\lstdefinelanguage{Dockerfile}
+{
+  morekeywords={FROM, RUN, CMD, LABEL, MAINTAINER, EXPOSE, ENV, ADD, COPY,
+    ENTRYPOINT, VOLUME, USER, WORKDIR, ARG, ONBUILD, STOPSIGNAL, HEALTHCHECK,
+    SHELL},
+  morecomment=[l]{\#},
+  morestring=[b]',
+  morestring=[b]",
+}
+
+\lstset{
+    frame=tb,
+    language=Dockerfile,
+    columns=flexible,
+    keepspaces=true,
+    showstringspaces=false,
+    basicstyle=\small\ttfamily,
+    commentstyle=\color{Gray},
+    keywordstyle=\color{Red},
+    stringstyle=\color{RoyalBlue},
+}
+
 \chapter{Required packages}
 
 The project depends on the following packages:
@@ -8,7 +30,10 @@ The project depends on the following packages:
 
 If you prefer you could use the following Dockerfile to create an image starting from Ubuntu 20.04 with the required packages:
 
-\begin{lstlisting}[language=Dockerfile]
+\begin{lstlisting}[
+  language=Dockerfile,
+  caption={Dockerfile used}
+  ]
 FROM osrf/ros:foxy-ros1-bridge
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -73,7 +98,8 @@ RUN echo 'alias foxy="source /opt/ros/foxy/setup.bash"' >> ~/.bashrc
 RUN echo 'alias rosplz1="source ./devel/setup.bash"' >> ~/.bashrc
 RUN echo 'alias rosplz2="source ./install/setup.bash"' >> ~/.bashrc
 
-RUN echo 'alias rosinstall="rosdep install -y -r -q --from-paths src --ignore-src --rosdistro foxy"' >> ~/.bashrc
+RUN echo 'alias rosinstall="rosdep install -y -r -q --from-paths src \
+                            --ignore-src --rosdistro foxy"' >> ~/.bashrc
 RUN echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> ~/.bashrc
 RUN echo "export GAZEBO_MODEL_PATH=~/workspace2/src/g_robot/models" >> ~/.bashrc
 

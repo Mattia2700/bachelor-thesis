@@ -14,7 +14,7 @@ Since the project is quite big (?), it is shared with other two students with ea
   \item a solution to autonomously control ground robots avoiding dynamic obstacles (UGVs robots)
 \end{itemize}
 
-Basically, all the work is done using \Acrshort{ros}2\footnote{The Robot Operating System (ROS) is a set of software libraries and tools for building robot applications\cite{ros2desc}} which gives us the possibility to work separately on your own project, and since everyone creates his custom packages, at the end we only need to put everything together.
+Basically, all the work is done using \acrshort{ros}2\footnote{The Robot Operating System (ROS) is a set of software libraries and tools for building robot applications\cite{ros2desc}} which gives us the possibility to work separately on your own project, and since everyone creates his custom packages, at the end we only need to put everything together.
 
 A more detailed description can be found in the first chapter.
 
@@ -24,7 +24,7 @@ For me, is the possibility to give to some inanimate object, like a wheeled robo
 
 Some challenges I decided to took are the choice of the new version of ROS, with some great improves respect to the older one, but with less community support, and also working for the first time with a mobile robot.
 
-Parlare del tipo di robot, diff drive, ecc.
+Parlare del tipo di robot, diff drive, ecc. (?)
 
 % Il sommario dell’elaborato consiste al massimo di 3 pagine e deve contenere le seguenti informazioni:
 % \begin{itemize}
@@ -44,10 +44,47 @@ Parlare del tipo di robot, diff drive, ecc.
 
 What follows is a brief description of the work done by the other two students to have a better and clear idea of the workflow of the entire system.
 
-\subsection{Planning system}
+\subsection{Planning system, fleet management and web interface}
 \label{sub:planning}
 
-To be done...
+It is brain of the system, it lets the user choose which type of robot he wants to use (only ground robots or drones with ground robots as auxiliary), and then it dispatches the tasks to the right robots. It is possible to define multiple goals for each robot, and once done, the planner will start figuring out the best way to organize the fleet.
+
+In order to resolve a problem it must have been defined a domain: this contains a description of space you are interested in, in which you could specify reachable targets, making use of a set of predefined actions, requiring some preconditions to be met before executing them and causing some effects to the environment. In order to solve a problem, we need to check if its domain is compatible with the planning one, or in other words, if the goal is achievable, and if so, it is possible to look for a solution (i.e., a sequence of actions to be performed).
+
+Each robot waits for new commands to be received, with one specific implementation for each type of task. Here follows a list of actions currently available:
+
+\bigskip
+
+\begin{minipage}[h]{0.45\textwidth}
+  \centering
+  \textbf{\acrshort{uav}s actions}
+  \begin{itemize}
+    \centering
+    \item \code{uav\_move}
+    \item \code{uav\_take\_photo}    
+    \item \code{uav\_land\_on\_ugv}
+    \item \code{uav\_take\_off\_ugv}
+  \end{itemize}
+\end{minipage}
+\begin{minipage}[h]{0.45\textwidth}
+  \centering
+  \textbf{\acrshort{ugv}s actions}
+    \begin{itemize}
+      \centering
+      \item \code{ugv\_move}
+      \item \code{ugv\_charge}
+      \item \code{try\_ugv\_charge}
+      \item \code{ugv\_transporting\_uav\_move}
+    \end{itemize}
+\end{minipage}
+
+\bigskip
+
+These actions are the only ones the planner uses when a problem is specified to find a possible outcome: the output is a waterfall of actions that should be done, and once is completed it is possible to move to the next one. The implementation is left to whom works on that robot, because of their better understanding of that particular robot.
+
+But, speaking about movement, we need some coordinates. These are extracted from the 3D mesh and thanks to an annotation program it is possible to assign them a name: in this way instead of using a bunch of numbers, we use the name of the room, and their relationship is defined in a file. Each room is then connected to the others by default.
+
+Thanks to a web interface, communicating with \acrshort{ros}2 using \textbf{rosbridge} package and \textbf{websockets} (?), a user can define where the robots initially are and where they should go, and by pressing only a button they will start moving.   
 
 \subsection{Drones control}
 
