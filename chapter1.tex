@@ -88,4 +88,14 @@ Thanks to a web interface, communicating with \acrshort{ros}2 using \textbf{rosb
 
 \subsection{Drones control}
 
-To be done...
+This project aims to control the drones autonomously: in order to do that the drones are equipped with an autopilot module called \textit{Pixhawk 4}. In this way you do not need to control the drones manually (i.e., setting the motors speed), but you can just send commands (e.g. move forward or backward, turn left or right) and the autopilot will do the rest. Luckily, there is a bridge that permits the communication between this module itself and \acrshort{ros}2, so you are able to create subscribers and publishers nodes that interface directly with \textbf{PX4 UORB topics}\cite{px4}.
+
+The main command that is continuously sent is called \textbf{offboard}: it let the drone know there is still someone that wants to control it, otherwise it will land, for security reasons. The other one is \textbf{TrajectorySetPoint} which lets you set the goal position and orientation of the drone; passing only one point could not be enough, and this is the reason behind the choice of interpolating initial and final position with a Catmull-Rom spline, in order to have a smoother trajectory\footnote{It is also important to choose how many points you want to add to the trajectory, because higher the number, the smoother the trajectory will be, but it will take more time to execute it. On the other hand, lower the number, it will take less time to execute it, but it will be less smooth.}.
+
+The drone uses GPS to know where it is, but for testing purposes in the real world, the room chosen could not provide the necessary signal, so it was used OptiTrack cameras to simulate it. Thanks to some reflective surfaces, the eight cameras can estimate its position and orientation, providing a temporary alternative to GPS data, but for a limited space.
+
+But, before testing the drone in the real world, with possible catastrophic consequences, it is important to be sure that it works in a simulation at least; here Gazebo\footnote{A simulation suite, will be described as well in \autoref{sec:gazebo}} comes to help.
+
+When testing with Gazebo, only the position information could be read directly from the interface provided by the program itself, while the orientation one comes from the controller bridge: these data are then fused together inside a node and sent to the drone to give it feedback of its actions\footnote{This is called \textbf{odometry}.}. Speaking about the real environment, if GPS is available it will be possible to obtain position and orientation information directly from the drone, so the setup is quite the same. 
+
+With everything put together, the drone can be controlled autonomously.
