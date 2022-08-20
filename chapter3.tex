@@ -16,64 +16,67 @@
 }
 
 \chapter{Working in a real environment}
-
 \label{cha:realworld}
 
-When using a real environment, you need a real robot. In our department there is the following one:
-
-{\bf INSERT PIC HERE}
+Talking about the real world, we need a real robot; the one used comes from the \acrfull{disi} of University of Trento.
+A photo of the robot is shown in \autoref{fig:shelfino}. % (?)
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.3\textwidth]{images/nav2\_architecture}
-  \caption{The, so called, shelfino robot}
+  \includegraphics[width=0.5\textwidth]{images/nav2\_architecture}
+  \caption{The, so called, \textit{shelfino} robot}
   \label{fig:shelfino}
 \end{figure}
 
-
+Currently, of three of them, two are working, and only one is accessible through the network, necessary to set it up for the current project: although it should have been a multi-robot system, it has only been tested with one, for obvious reasons.
 
 \section{Shelfino setup} 
 
 \subsection{Adapting existing code}
 
-The hardware interface was already developed by some research students in the last years, but they are no longer here. My first idea was to develop some ROS nodes that would connect to encoders, motors drivers and lidar, but I couldn't get so much information about brands or manifestations of the hardware.
+The hardware interface was already developed by some research students in the last years, but they are no longer here. The original idea was to develop some ROS nodes that would connect to encoders, motors drivers and lidar, but specific information about brands or manufacturers of some of these components were not provided.
 
-So I decided to adapt the code to ROS2, but I couldn't get it to work, mainly because some features were not implemented in the same way as they were originally in \acrshort{ros}1. For example, in \acrshort{ros}1 there was a needing to include {\it C++ Boost Library} in order to use {\it shared pointers}, {\it mutex and lock} and some other features; later on, these libraries were included in the standard library, so there is no need to include them anymore.
-The problems come in when the included libraries are custom ones designed specifically for \acrshort{ros}1, and not ported similarly in \acrshort{ros}2, like {\bf Callback Queues}\footnote{Add more information}\cite{migrationguide}.
+Another attempt was trying to adapt the code to ROS2: it was not straightforward, and it did not work at the end since the libraries used refers to a not well-known network infrastructure.
 
-Later on, after spending (some) hours trying to adapt the code with poor results, I decided to try another solution: using a \acrshort{ros}2 package called {\it ros1\_bridge}. Since both \acrshort{ros}1 and \acrshort{ros}2 use an own network to deliver messages, it is possible to use a node that listens to (?) both(?) and when something is received from one side, it is sent to the other one: in this way it is possible to run the existing code as it is on a \acrshort{ros}1 node, and interact with it from a \acrshort{ros}2 workspace.
 
-In order to run both \acrshort{ros}1 and \acrshort{ros}2 nodes on the same machine\footnote{or Docker container} I need the same version of Ubuntu. And since I need to use \acrshort{ros}2 Foxy, that runs on Ubuntu 20.04, because of planning libraries, I have to use \acrshort{ros}1 Noetic, but that code was written for the previous version\footnote{\acrshort{ros}1 Noetic, for Ubuntu 18.04}: luckily, after installing the next version of the dependencies, there were no compatibility issues.
+\subsection{\acrshort{ros}1 Bridge}
 
-\subsection{Existing nodes}
+The final attempt involved the use of a \acrshort{ros}2 package called \textit{ros1\_bridge}. Since both \acrshort{ros}1 and \acrshort{ros}2 use their own local network to deliver messages, you can create a node that listens to both networks and when something is received from one side, it is sent to the other one: in this way it is possible to run the existing code as it is on a \acrshort{ros}1 node with its dependencies, while making use of its topics and services on a \acrshort{ros}2 workspace at the same time.
+
+But, in order to run both \acrshort{ros}1 and \acrshort{ros}2 nodes on the same machine (or Docker container), they need the same version of Ubuntu. \acrshort{ros}2 Foxy version was mandatory because of planning libraries and it runs on Ubuntu 20.04, so also \acrshort{ros}1 has to use it; the original code, however, was written for the previous version (\acrshort{ros}1 Melodic running Ubuntu 18.04), but luckily after running it on the new one (\acrshort{ros}1 Noetic), it worked without problems.
+
+To be more precise, it was used the \code{dynamic\_bridge} of this package, instead of \code{parametric\_bridge} and \code{static\_bridge} ones: with the first one you can choose what topics or services you want to bridge, but it has some bugs and does not work well, while the second one needs to be compiled every time there are some changes; the dynamic one, instead, adapts itself.
+
+\subsection{Existing nodes explained}
 \label{subsec:nodes}
 
-I created a specific launch file\footnote{A launch file is a file containing information about which nodes, eventually with some parameters, should be started when passed to {\it roslaunch} (\acrshort{ros}1) or {\it ros2 launch} (\acrshort{ros}2), instead of running each node singularly.}, in order to start the 3 required nodes\footnote{The bold text indicates a custom package; an italic one is a ROS-provided package}:
+In order to start the required nodes, a custom launch file was created. A launch file is a file containing information about which nodes, eventually with some parameters, should be started when the system is started, instead of doing it one by one. It launches three nodes:
 
 \begin{itemize}
-    \item {\it base2laser\_bcast}\footnote{bcast stands for broadcast}
-    \item {\bf hw\_interface}
-    \item {\bf odom\_node}
+    \item \code{lidar\_position}
+    \item \code{hw\_interface}
+    \item \code{odom\_node}
 \end{itemize}
 
-\subsubsection{base2laser\_bcast}
+\subsubsection{lidar\_position}
 
 \begin{lstlisting}[
+  label={lst:lidarpos},
   language=XML,
-  caption={Transormation describing the lidar height with respect to the ground}
   ]
-    <node pkg="tf" type="static_transform_publisher" name="base2laser_bcast"
-        args="0. 0 0.45 0 0 0 base_link base_laser 100" />
+    <node pkg="tf" type="static_transform_publisher" name="lidar_position"
+        args="0 0 0.45 0 0 0 base_link lidar_link 100" />
 \end{lstlisting}
 
-This is a node of the \code{tf}\footnote{tf is a package that lets the user keep track of multiple coordinate frames over time [...] and lets the user transform points, vectors, etc between any two coordinate frames at any desired point in time.\cite{tf}} package of \acrshort{ros}1 called \code{static\_transform\_publisher}\footnote{Publish a static coordinate transform to tf using an x/y/z offset in meters and yaw\/pitch/roll in radians. [...]. The period, in milliseconds, specifies how often to send a transform.}, with a custom name. What it does, as the name says, is broadcasting a transformation between base\_link and base\_laser every \code{100ms} with: base\_link is the root one and base\_laser is differing from it by a translation of (x: 0, y: 0, z: 0.45) and a rotation of (roll: 0, pitch: 0, yaw: 0). So when some points are returned by the lidar, we know they refer to the given position and rotation, and should be considered (and eventually translated) when using these data for other calculations.
+This is a node (with a custom name) of the \code{tf} package of \acrshort{ros}1, \textit{a package that lets the user keep track of multiple coordinate frames over time [...] and lets the user transform points, vectors, etc. between any two coordinate frames at any desired point in time} \cite{tf}. The node executable is called \code{static\_transform\_publisher} and it is used to \textit{publish a static coordinate transform to tf using an x/y/z offset in meters and roll/pitch/yaw in radians [...]. The period, in milliseconds, specifies how often to send a transform} \cite{tf}. 
+As \autoref{lst:lidarpos} shows, here it is used to describe the transformation between \code{base\_link}, the root frame (putted on the ground under the robot, with [0,0,0] position and [0,0,0] rotation) and \code{lidar\_link} (0.45 meters above) every \code{100ms}. So when some points are returned by the laser scans, we know also the height, since it is a 2D scan.  
 
 \subsubsection{hw\_interface}
 
-It is a node designed to interface with the underlying hardware, thanks to the custom \code{hardwareglobal interface}\footnote{Helper class using a ZeroMQ framework to deliver messages between the hardware (client) and the server running on the BeagleBone, that keeps track of the recevied data and make it accessible using the class method.} library previously developed by the researchers.
+It is a node designed to interface with the underlying hardware, thanks to the custom \code{hardwareglobal\-interface} library previously developed by the researchers. It is a helper class using a ZeroMQ framework to deliver messages between the hardware (client) and the server running on the BeagleBone, that keeps track of the received data and make it accessible using the class method.
 
-In other words, using the just described interface, it reads the data coming from the encoders, lidar and tracking camera and make them available as \acrshort{ros}2 topics (\code{/encoders, /scan, /t265}). It also subscribes to a \code{/cmd\_vel} topic from which reads the requested linear and angular velocity and dispatches them to the motors of the robot in the right way.
+In other words, using the just described interface, it reads the data coming from encoders, lidar and tracking camera and make them available as \acrshort{ros}2 topics (\code{/encoders, /scan, /t265}). It also subscribes to a \code{/cmd\_vel} topic from which reads the requested linear and angular velocity and dispatches them to the motors of the robot accordingly.
 
 \subsubsection{odom\_node}
 
-This node makes use of the information received from the encorders (tick updates) and tracking camera topics, to calculate odometry, which represents the rotation and the translation of the robot from where it started. These new information are then published both as a message in a topic and as a transformation in the tf tree, the one between \code{odom\_frame} and \code{base\_link}, to describe the frame where the robot is.
+This node makes use of the information received from the encoders topic about the rotation of the wheels, and tracking camera topic, to calculate odometry, which represents an estimation of the position and the rotation of the robot from where it started. These new information are then published both as a message in a topic, and as a transformation between \code{odom\_frame} and \code{base\_link}, employed by the navigation system as described in \autoref{cha:navigation}.

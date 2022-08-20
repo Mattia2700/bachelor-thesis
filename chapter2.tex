@@ -1,13 +1,16 @@
+\setlength\intextsep{0pt}
+
 \chapter{About the technology stack}
 \label{cha:techstack}
 
-Before describing the entire project, we need to know what we are talking about. In particular, there are the softwares or libraries strongly used in the project:  
+Before describing the entire project, we need to know what we are talking about. In particular, there are the software and libraries strongly used in the project:  
 \begin{itemize}
-    \item Docker
     \item ROS2
     \item Gazebo
-    \item Navigation stack, nav2
-    \end{itemize}
+    \item \acrfull{rviz}
+    \item \acrfull{nav2}
+    \item Docker
+\end{itemize}
 
 \section{\acrshort{ros}2}
 
@@ -26,15 +29,15 @@ This means that executing a \acrshort{ros} node on your own computer is the same
 \section{Gazebo}
 \label{sec:gazebo} % add more info about gazebo (?)
 
-\begin{wrapfigure}{r}{0.3\textwidth}
-    \includegraphics[width=0.3\textwidth]{images/gazebo}
+\begin{wrapfigure}{r}{0.25\textwidth}
+    \includegraphics[width=0.25\textwidth]{images/gazebo}
 \end{wrapfigure}
 
-Here comes the simulation part, because thanks to Gazebo-ROS integration it is possible, with some additional libraries, to simulate external devices. It is not limited to this, because it gives you a sandbox you could set up as the real environment you want to simulate.
+Gazebo is a simulation suite. It lets you create and simulate things with the bundled physic and render engines, alongside a variety of sensors.
 
-In this way, you don't need to have the real robot next to you, you can just use a virtual one: it's very useful in the case you want to change some algorithms or parameters, and you need to test them even if you are on the opposite side of the world.
+It comes as a standalone software, but thanks to its interfaces it is possible to integrate it with \acrshort{ros}2, using several packages developed for this purpose: in this way you can simulate both robots and the environments in which they operate, before actually moving to the real world, or test your last modifications even if you are somewhere other than the real robot location.
 
-% includere il fatto che l'ho fatto per questo motivo la parte di simulazione?
+With the sensors and the plugins you are able to simulate lasers (e.g. lidars), cameras (e.g. depth cameras), IMUs and GPS receivers, or also differential drive and joints state.
 
 \section{\acrfull{rviz}}
 
@@ -42,12 +45,13 @@ In this way, you don't need to have the real robot next to you, you can just use
     \includegraphics[width=0.25\textwidth]{images/rviz}
 \end{wrapfigure}
 
-\Acrshort{rviz}, is a visualization tool for ROS: in this way, you are able to visualize the sensors, the robots, the environment, and also the algorithms; in general, you can see the actual state of your \acrshort{ros} system. % aggiungere roba (?)
+\Acrshort{rviz}, is a visualization tool for ROS: you can visualize the sensors, the robots, the environment, and also the algorithms; in general, you can see the actual state of your \acrshort{ros} system. In this project it has been used to set initial robot position on the map, see room boundaries, obstacles and visualize the path the robot is currently following to reach the goal, that could be specified graphically (manually) or by some other nodes (automatically). 
 
 \section{\acrfull{nav2}}
 
-The Navigation Stack is a collection of packages of \acrshort{ros}2 which provides useful tools helping you with the navigation of your robot: path planning, localization, and so on. You can use it by passing your desired configurations in a YAML file which will be used when you launch the navigation stack: basically, you specify what nodes you want to use and the parameters you want to set, and everything is done for you. (?)
-These packages were used as a base to everything else, so in this way I don't need to worry about the navigation algorithms, since my goal is to develop a system to move around ground robots where indicated.
+The Navigation Stack is a collection of packages of \acrshort{ros}2 providing useful tools for the navigation of your robot: path planning, localization, obstacle avoidance, recovery from collisions, mapping and so on\footnote{A detailed description can be found in \autoref{cha:navigation}.}. These packages were used as a basis for this project: in this way you do not have to worry about the navigation algorithms, you just need to pass sensor information, and they will do the rest; moreover, you can use the provided interfaces to customize and automate the whole process of navigation.
+
+It can be thought as a template for navigation systems with a generic configuration, but thanks to \Acrshort{ros}, you can set what parameters you want for each node easily with a YAML file: this will be parsed when you launch the navigation stack and the nodes will be configured accordingly.
 
 \begin{figure}[h]
     % \noindent\makebox[0.9\textwidth]{\includegraphics[width=0.9\paperwidth]{images/nav2_architecture}}
@@ -58,8 +62,6 @@ These packages were used as a base to everything else, so in this way I don't ne
   \end{figure}
 
 \section{Docker}
-
-\setlength\intextsep{0pt}
   
 \begin{wrapfigure}[3]{r}{0.15\textwidth}
     \includegraphics[width=0.15\textwidth]{images/docker}
@@ -73,4 +75,4 @@ Docker is a platform that let you separate your application using an isolated en
     \item permit development on any device \textbf{not running} necessarily \textbf{Ubuntu 20.04} (required from \acrshort{ros}2) as its OS
 \end{itemize}  
   
-Inside a Dockerfile, a file containing instructions on how to build an image\footnote{It is used as a starting point when launching a container} with your own configurations, were typed all the commands required to install the missing packages from the base image already containing basic \acrshort{ros}1 and \acrshort{ros}2 packages \cite{dockerimage}. The complete Dockerfile could be found in \autoref{cha:dockerfile}.
+Inside a Dockerfile, a file containing instructions on how to build an image\footnote{It is used as a starting point when launching a container} with your own configurations, were typed all the commands required to install the missing packages from the base image already containing basic \acrshort{ros}1 and \acrshort{ros}2 packages \cite{dockerimage}. The complete Dockerfile can be found in \autoref{cha:dockerfile}.
