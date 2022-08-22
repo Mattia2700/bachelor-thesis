@@ -1,17 +1,16 @@
 \chapter{Working in a simulated environment}
 
-The choice to develop (?) a simulated environment was due to the fact I could not be always in the robotic laboratory, because of other didactic activities. If you do a good job with the abstraction when setting up your simulated robot and world, everything else that was working before, should now continue to work; the goal is to create a simulation as close as possible to the real world, so you can not tell which environment\footnote{real or simulated} you are using.
-
-Part of the setup I am going to present is inspired to Automatic Addison tutorials\cite{tutorials}.
+The choice to develop a \textbf{simulation} is due to the fact that sometimes you may not physically be in the university to use the real robot. The challenge here is doing a good job with the \textbf{abstraction}, which means that the simulated environment and the simulated robot should be \textbf{as close as possible} to real ones. In other words, everything that was working before (i.e. navigation and planning) should now continue to work even if you are no longer in the real world; in theory you should not notice if you are in the real world or in a simulated one.
 
 \section{Models}
 
-In order to create a complete simulation, we need to create some models, both for an environment and a robot.
+In order to create a complete simulation, we need to create what is missing from the reality, which are the models of the environment and the robot.
 
 \subsection{Environment}
+\label{sub:map}
 
-It was used a mesh of the Povo upper floors (?), provided by (?). Unfortunately, this is not identical to the real environment, because some measurements are not exact.
-The model is written is \acrfull{sdf} with the mesh as visual and collision model; this model is then used in \code{world} file\footnote{written in \acrshort{sdf}}, alongside with ground plane and sun ones, provided by Gazebo, and of course the robot model.
+A mesh of the Povo upper floors was provided by professor \textit{Marco Roveri} \cite{roveri}. Unfortunately, when compared to the navigation map generated from real data, it turns out that the mesh is \textbf{not very accurate}. Two workarounds are possible: creating a \textbf{new navigation map} for simulation purposes or \textbf{adapting the mesh} as much as possible (?); it turns out, as described in \autoref{sub:waypoints}, by scaling the mesh \textbf{1.0925 times} in the long direction leads to a better result. % testare slam con mesh e fare nuova mappa
+Then a model is creating using \acrfull{sdf}, with the mesh employed in \textbf{visual} and \textbf{collisions} tags (?); this model is then used in \code{world} file\footnote{Always written in \acrshort{sdf}} (alongside with ground plane and sun ones, provided by Gazebo and the robot model, of course).
 
 \begin{figure}[h]
     \centering
@@ -19,12 +18,12 @@ The model is written is \acrfull{sdf} with the mesh as visual and collision mode
     \caption{Povo model for simulation. Colors were used for a better visualization.}
 \end{figure}
 
-\newpage
-
 \subsection{Robot}
 
-A mesh of robot was created starting from {\it shelfino} (see \autoref{fig:shelfino}), trying to keep it as similar as possible, and each piece\footnote{robot base, lidar, wheels and caster wheel} was exported singularly. For performance reasons, the only mesh actually used is the robot base, because of its special structure, in order to avoid contact with the partially inside spinning wheels. The other ones are substituted by \acrshort{sdf} or \acrfull{urdf} built-in geometric shapes.
-Both \acrshort{sdf} and \acrshort{urdf} are used: the first one is for Gazebo, the second one for a node, called \code{robot\_state\_publisher}, to help visualize the robot (and wheel rotation) in \acrshort{rviz}.
+Part of the setup is inspired to Automatic Addison tutorials\cite{tutorials}. % forse togliere (?)
+
+The robot mesh was created starting from \textit{shelfino} (see \autoref{fig:shelfino}), trying to keep it \textbf{as similar as possible}, and each piece (robot base, lidar, wheels and caster wheel) was exported singularly. For performance reasons in Gazebo, the only mesh actually used is the robot base, because of its special structure to \textbf{avoid contact} with the spinning wheels \textbf{partially inside}. The other ones are substituted by \acrshort{sdf} or \acrfull{urdf} built-in geometric shapes (i.e. cylinders).
+Both \acrshort{sdf} and \acrshort{urdf} were used: the first one is used by Gazebo, the second one by a node called \code{robot\_state\_publisher} that helps visualize the robot in \acrshort{rviz}.
 
 \begin{figure}[h]
     \centering
@@ -34,32 +33,36 @@ Both \acrshort{sdf} and \acrshort{urdf} are used: the first one is for Gazebo, t
 
 \section{Gazebo plugins}
 
-After placing the models in Gazebo, we need some way to make our robot interact with the environment. It is no longer possible to utilize the nodes in \autoref{subsec:nodes} because they make use of a real hardware, but thankfully, Gazebo provides some plugin that can be attached to the \acrshort{sdf} model as a normal tag. Once done, robot can be used as if it were a real robot.
+After placing the models in Gazebo, we need some way to make our robot \textbf{interact} with the environment. It is no longer possible to utilize the nodes in \autoref{subsec:nodes} because they make use of a real hardware, but thankfully Gazebo provides some \textbf{plugins} that can be added to the \acrshort{sdf} model as a normal tag.
+We always need a way to set \textbf{linear and angular velocities} to make the robot moves as desired, a way to \textbf{calculate odometry} and a lidar to \textbf{detect obstacles}. Once done, the robot can be used as if it were a real robot.
+
+Sadly, no tracking camera plugins are available, so we content ourselves with only wheel rotation information to calculate odometry. 
 
 \subsection{Differential drive plugin}
 
 Once added, some configurations needs to be made:
 \begin{itemize}
-    \item set update rate (Hz)
-    \item specify name of wheel joints (control)
-    \item wheels separation and diameter (kinematics)
-    \item max torque and acceleration (limits)
-    \item topics name from where receiving desired velocity and publish odometry data
-    \item whether to publish frame transformations and their names (used by \acrshort{rviz})
+    \item set \textbf{update rate} (Hz)
+    \item specify \textbf{name} of wheel joints (control)
+    \item set wheels \textbf{separation} and \textbf{diameter} (kinematics)
+    \item set max \textbf{torque} and \textbf{acceleration} (limits)
+    \item specify topic names from where \textbf{receiving desired velocity} and \textbf{publish odometry data}
+    \item whether to \textbf{publish frame transformations} and their names (used by \acrshort{rviz})
 \end{itemize}
-After that, (the) robot can now move.
+After that, the robot can now move.
 
-\subsection{Joint state publisher plugin}
+\subsection{Joint state publisher plugin} % forse toglierlo (?)
 
-This plugin is used to know how much the wheels are spinning in order to visualize the state of the robot in \acrshort{rviz}. Only update rate and wheel names are required.
+This plugin is used to know how much the wheels are spinning in order to visualize them in \acrshort{rviz}. Only update rate and wheel names are required. (?)
 
-\subsection{Lidar plugin}
+\subsection{Ray sensor plugin}
 
-When creating a sensor tag of type \code{ray}, with scan (direction, angle, number of samples), range (distance) and noise (disturbance) information, a lidar plugin should be added. Only configurations needed are:
+To be able to detect obstacles, a lidar is needed. To do so, you can just use the \textbf{sensor} tag \code{ray} of Gazebo, setting \textbf{scan}, \textbf{range} and \textbf{noise} information, but also a plugin is required to make it work. Only configurations needed are:
 \begin{itemize}
-    \item topic name where to pub the data
-    \item which \acrshort{ros} message type to use (sensor\_msgs/LaserScan)
-    \item frame name where the lidar is attacched to
+    \item what \acrshort{ros} message type to use as \textbf{output} (\code{sensor\_msgs/LaserScan})
+    \item frame name where the lidar is \textbf{attacched} to (described somewhere else in the model)
 \end{itemize}
 
 % add robot description of link, joints, ecc...? o qualcos'altro? tipo sdf come allegato? (?)
+
+% aggiungere struttura cartella con models e worlds solo

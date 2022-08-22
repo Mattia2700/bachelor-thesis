@@ -1,42 +1,48 @@
 \chapter{Planning integration}
 
-Last, but not least, (?) there is the planning part integration, done by Filippo Rossi\footnote{There will not be any further explanation, since the entire project was already described in \autoref{sub:planning}}. What was described in the previous chapters leads (?) to a working version of the project, but has not any practical use, because you need to set where you want the robot to go. Entertaining but useless (?). This is the goal of this chapter: add some mission the robot needs to complete, without any human interaction directly on the robot (?).
+This chapter aims to \textbf{integrate} the planning part developed by \textit{Filippo Rossi}\footnote{His entire project is described in \autoref{sub:planning}} \cite{fr}. What already discussed in the previous chapters leads to a \textbf{working} version of the robot (it is able to move around), but does not have any practical use, because you need to set \textbf{where} you want the robot to go \textbf{every time}. This is the goal of this chapter: add some \textbf{missions control} (?), to give the robot some tasks it has to complete, without the needing of any \textbf{low-level human interaction}. Everything except the custom service messages can be found in \code{planning\_bridge} package in Figure (?).
 
 \section{Modifications from original planning}
 
-When the planning was developed, Filippo could not receive any feedback from us, since we had some other challenges to face, like making the robots to move autonomously. So, in response, the planning has come as a general workspace to which we can add some modification to meet our specific needs.
+When the planning was developed, Filippo could not receive any feedback, since we were facing some other challenges (i.e. make robots move autonomously). So, in response, the planning is more like a \textbf{generic workspace} to which we can add some \textbf{modifications} to meet our specific needs; then we can attach the \textbf{adapted workspace} to what was already developed, since \acrshort{ros} is \textbf{modular}.
 
 \subsection{Correct waypoint coordinates}
+\label{sub:waypoints}
 
-Thanks to Filippo's waypoints extractor and \code{cvat} (?) software, all the required information could be found in a JSON file: when the robot is told to move in a certain room, the only operation to be done (?) is searching its name in the file and get the corresponding coordinates, but the mesh used for generating those waypoints is not the same of the real environment.
-Thanks to Blender (cite (?)), after loading the planning mesh and the map used by the navigation system, I (?) was able to find some modification I can bring to get a better result: turning the mesh by {\bf 135 degrees} anticlockwise around the Z axis, scaling up the mesh by {\bf 1.0925\%} on the Y axis, and translating it {\bf 6.82099667587} on the X axis and {\bf 8.7179839194} on the Y axis. Luckily, when doing this on the entire mesh is like doing it to its own points, which is the same of doing it to the singular waypoints, without needing to repeat the annotation process from the beginning: this was done with a Python script (numpy?, matrixes? "do, do, do" (?)).
+Thanks to Filippo's \textbf{waypoints extractor} and \code{cvat} \textbf{annotation software}, all the coordinate information can be found in a \textbf{JSON file}: when the robot is told to move in a certain room, only step to take is \textbf{searching} its name in the file and reading its \textbf{coordinates}.
+But the mesh, the same described in \autoref{sub:map}, used for generating those waypoints is not the same of the real environment, and navigation map is rotated with respect to this one.
+Using \textit{Blender} \cite{blender}, after loading both mesh and map, some modifications that can bring to a better result has been found: by turning the mesh by \textbf{135 sexagesimal degrees counterclockwise} around the Z axis, scaling (up) the long side (Y axis) of the mesh \textbf{1.0925 times}, and translating 6.8210 meters along the short side (X axis) and \textbf{8.7180 meters} along the long side (Y axis). Luckily, when applying these transformations on the entire mesh you do it on its own points, and apply them on these waypoints in the JSON file is the same, without needing to repeat the annotation process from the beginning. The \textit{translation} has been operated with the Python script in. % autoref
+
+% aggiungere script python (?)
+% aggiungere entrance tag per entrata porta, dato che non è ben definita
 
 \subsection{Change JSON structure}
 
-Then, since the JSON (?) was written as a list of dictionaries, it would be required to iterate over every element and search for the one with the searched name, and if they match, then it is possible to get the coordinates. Instead, I modified the file to be a dictionary, where each key represents the name of the room, and its respective value is a dictionary containing all the data related\footnote{related to that room}: room center and boundaries coordinates.
+Since that JSON file was written as a \textbf{list of dictionaries}, it would be required to iterate \textbf{over every element} and search for the one with the \textbf{requested name}, and when they match, it is possible to get the coordinates. Instead, for an easier use, a dictionary is created with the name of the room as \textbf{key} and the coordinates of that room center and boundaries as \textbf{value}.
 
-\subsection{Remove a stub node from execution}
+% aggiungere esempio json, prima e dopo
 
-Currently, the only action supported is \code{ugv\_move}.
-For testing purposes, some nodes were added to simulate \acrshort{ugv}s and \acrshort{uav}s: they were also started at the beginning of the execution, but one of these now has its real implementation, so its stub one has been removed from the execution. (?)
+\subsection{Remove stub nodes from execution}
 
-\section{Task executor}
+Currently, the only actions supported are \code{ugv\_move} and \code{ugv\_transporting\_uav\_move}: although the name is different, they are the same action and share the \textbf{same code}, they have been separated for planning reasons. For testing purposes, in the original planning some nodes were added to simulate \acrshort{ugv}s and \acrshort{uav}s: they were started at the beginning of the execution, but these two now has their real implementation, so the \textbf{stub ones} have been removed.
+
+\section{Task executor} % creare launch file e splittare i due nodi (?) 
 
 Three nodes have been created to let the robot moves autonomously: 
 \begin{itemize}
-    \item a {\bf move client} that consists of two nodes executed in the same process, but in different threads, in order to listen and set the new destination of the robot
-    \item a {\bf pose server} which is a service server node responsible for returning the current pose of the robot when requested
+    \item a \textbf{move client} that consists of two nodes executed in the same process, in different threads, in order to listen and set new destinations for the robot
+    \item a \textbf{pose server}, a service server node responsible for returning the current pose of the robot when requested
 \end{itemize}
 
-All the messages exchanged between nodes using services are part of \code{planning\_bridge\_msgs} package. % aggiungere immagini package? parlare anche di planning_bridge? 
+All the messages exchanged between nodes using services are part of \code{planning\_bridge\_msgs} package. % listing codice forse, già immagini sotto
 
-\subsection{Move client} %(?)
+\subsection{Move client}
 
-As the name says, this process is used to move the robot around based on the planning decisions. It could be divided in two parts:
+As the name says, this process is used to move the robot around based on the \textbf{planning decisions}. It could be divided in two parts:
 
 \begin{itemize}
-    \item a planning client, which is always listening for the next goal to be reached
-    \item a navigation client responsible for setting the destination and let the robot reach it
+    \item a \textbf{planning client}, always listening for the next goal to reach
+    \item a \textbf{navigation client} that sets the destination and starts the navigation
 \end{itemize}
 
 $$  
@@ -51,27 +57,29 @@ $$
 
 %inserire immagine codice (?)
 
-It is an action client of \code{plansys2} (?), which means that after setting a goal it would send back feedback and the result of that action at the end. When a new task has been created and started, the planning server would call the \code{do\_work()} method of the designed client, to let it know a new job needs to be completed.
-Inside this method the client transforms the room name in coordinates and passes the goal to the navigation client if it was not already set, making use of a custom service; after that, it asks its current position to the pose server (with another service) and uses it to set both the initial and current position; then, it returns a percentage of completion of the task. This method is called continuously until the task is completed, so if the initial position is already set (and as a result also the goal), it would continue to ask its current position in order to calculate the euclidean and return a new percentage of completion; because the path to reach the destination might not be a straight line and the distance used is the euclidean one, it could happen the current distance is greater than the initial one: in this case, they are swapped to keep 0 as the lower bound of completion. (?)
+It is an \textbf{action client} (called \code{ActionExecutorClient}), coming from \code{plansys2\_executor} (cite (?)) package, of \code{plansys2\_msgs::action::ExecuteAction} action: it means that it connect to its server (called \code{ActionExecutor}) waiting for a \textbf{new goal} to reach. When it received a new goal is responsible for completing it, and at the same time he has to return \textbf{continuous feedback
+} with the current percentage of completion, until the goal is \textbf{reached} (100\% completion).
 
-\subsubsection{Navigation client}
+% inserire immagine action
 
-This is both an action client and a service server: the first is used to receive the coordinates from the planning client and  uses the second one to connect to the navigation action server and set the given destination. It is only called the first time a new task is created.
+When a new task has been created and started, the action server would call the \code{do\_work()} method of the designed client, to let it know a new job needs to be completed.
+Inside this method the client transforms the \textbf{room name} (passed as goal) in \textbf{coordinates} and, if the goal was not already set, it passes it to the navigation client, making use of a custom service. After that, it asks \textbf{its current position} to the pose server (with another service) and uses it to set both the \textbf{initial and current position} (because the robot is not moving yet, the current position is the same as the initial one); using them, it returns a \textbf{percentage of completion} (0\%) to the action server.
+This method, then, is called \textbf{continuously} until the task is completed to give some feedback: now the initial position is already set (and as a result also the goal), so it continues to ask for its current position (in order) to calculate the \textbf{euclidean distance} from the initial one and then, it returns a new percentage of completion. Because the path used to reach the destination might not be \textbf{a straight line} and the distance employed is the euclidean one, it could happen the current distance is \textbf{greater} than the initial one: in this case, they are swapped to keep 0\% as the \textbf{lower bound} of completion, otherwise it would become negative. Choosing the maximum between percentage of completion and zero would lead to \textbf{loss of information}, and it is the reason why it has not been used. 
+
+$$ 1-\dfrac{current\_distance}{initial\_distance} $$
+
+\subsubsection{Navigation client} % add response to server and printing result in the client above (?)
+
+This node is both a \textbf{service server} and an \textbf{action client}: the first is used to receive the coordinates from the planning client and the second to connect to the navigation action server and set the just received destination. It is called only \textbf{once}, when a new task is created.
 
 \subsection{Pose server} %(?)
 \label{sub:pose}
 
-The pose server acts like a service server: when it receives a request, it returns the current position of the robot. In order to achieve it, some other calculations need to be done: we are interested in \code{base\_link} frame and the only transformation with it as a child frame is the \code{odom} one, but this is not the global one, the same used for waypoint coordinates. There is the need to express it from the \code{map} frame perspective, and luckily such a transformation is available thanks to \acrshort{amcl} node. 
-Thanks to \code{tf\_monitor}\cite{tfexample} used as a template, it was possible to obtain the correct transformation, fusing the required two.
+When it receives a request, it returns the \textbf{current position} of the robot, which is \code{base\_link} position in the \code{map} frame. In order to achieve it, some other calculations need to be done: we are interested in \code{base\_link} frame, but the only transformation referring (to it) is the \code{odom} one, not the same used for waypoint coordinates. There is the need to express it from the \code{map} frame perspective, and luckily such a transformation (\code{map} $\rightarrow$ \code{odom}) is available thanks to \acrshort{amcl} node. 
+Thanks to \code{tf\_echo} node \cite{tfexample} used as a template\footnote{If you follow the documentation, the process to get the transformation between two frames not directly connected, it will not work. The only node doing this and also working is \code{tf\_echo}.}, it was possible to obtain the correct transformation, \textbf{fusing} the required two.
 
 $$
     PLANNING \;\; CLIENT \; 
         \autorightleftharpoons{\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;}{float32 x, y, z} \;
     POSE \;\; SERVER
-$$ 
-
-% In order to have a better control over the task executions, it has been defined two services, in order to communicate and synchronize the robot action with the planning server. % continue
-
-
-
-
+$$
