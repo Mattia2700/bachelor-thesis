@@ -1,5 +1,3 @@
-\newcommand{\arguments}[2]{{\bf #1}: {\it #2}}
-
 \chapter{Navigation}
 \label{cha:navigation}
 
@@ -66,9 +64,9 @@ All the previous nodes interface with \textbf{Lifecycle Manager}, which brings \
     \caption{Sequence of service calls when startup is requested}
 \end{figure}
 
-\section{\code{g\_robot} package integration}
+\section{\code{ground\_robot\_navigation} package integration}
 
-Everything required to navigating through the environment is provided by \code{g\_robot} package. The complete structure is shown in \autoref{fig:folder}
+Everything required to navigating through the environment is provided by \code{ground\_robot\_navigation} package. The complete structure is shown in \autoref{fig:folder}
 
 % TODO: sistemare folder structure (togliere v2 da urdf e aggiugnere "..." se una cartella contiene altri file; sistemare altezza lidar? 0.45 invece di 0.41 come su shelfino?)
 
@@ -106,7 +104,7 @@ Inside the \code{launch} folder there is the script used to \textbf{start} the e
         \bigskip
         % \captionsetup{singlelinecheck = false, format= hang, justification=raggedright labelsep=space}
         \includegraphics[width=\textwidth]{images/g-robot}
-        \caption{Folder structure of g\_robot package}
+        \caption{Folder structure of \code{ground\_robot\_navigation package}}
         \label{fig:folder}
     \end{minipage}
 \end{figure}
