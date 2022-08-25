@@ -1,26 +1,4 @@
-\lstdefinelanguage{Dockerfile}
-{
-  morekeywords={FROM, RUN, CMD, LABEL, MAINTAINER, EXPOSE, ENV, ADD, COPY,
-    ENTRYPOINT, VOLUME, USER, WORKDIR, ARG, ONBUILD, STOPSIGNAL, HEALTHCHECK,
-    SHELL},
-  morecomment=[l]{\#},
-  morestring=[b]',
-  morestring=[b]",
-}
-
-\lstset{
-    frame=tb,
-    language=Dockerfile,
-    columns=flexible,
-    keepspaces=true,
-    showstringspaces=false,
-    basicstyle=\small\ttfamily,
-    commentstyle=\color{Gray},
-    keywordstyle=\color{Red},
-    stringstyle=\color{RoyalBlue},
-}
-
-\chapter{Required packages}
+\chapter{Docker Image}
 \label{cha:dockerfile}
 
 The project depends on the following packages:
@@ -33,6 +11,7 @@ If you prefer you could use the following Dockerfile to create an image starting
 
 \begin{lstlisting}[
   language=Dockerfile,
+  style=DockerStyle,
   caption={Dockerfile used}
   ]
 FROM osrf/ros:foxy-ros1-bridge
@@ -107,4 +86,145 @@ RUN echo "export GAZEBO_MODEL_PATH=~/workspace2/src/g_robot/models" >> ~/.bashrc
 ENTRYPOINT ["bash"]
 \end{lstlisting}
 
+\chapter{Planning Bridge deepening}
+\label{cha:deepening}
 
+\newsavebox\poseserver
+
+\noindent\begin{lrbox}{\poseserver}
+  \noindent\begin{lstlisting}[language=C, style=CStyleTextWidth]
+while (rclcpp::ok() && !listener_.buffer_.canTransform("map", "base_link", tf2::TimePoint())) rate.sleep();
+
+geometry_msgs::msg::TransformStamped transform_ = listener_.buffer_.lookupTransform("map", "base_link", tf2::TimePoint());
+
+response->x = transform_.transform.translation.x;
+response->y = transform_.transform.translation.y;
+  \end{lstlisting}
+\end{lrbox}
+
+\newsavebox\navigationclient
+
+\noindent\begin{lrbox}{\navigationclient}
+  \noindent\begin{lstlisting}[language=C, style=CStyleNoFrame]
+goal_->pose.position.x = request->x;
+goal_->pose.position.y = request->y;
+goal_->pose.position.z = 0;
+goal_->pose.orientation.x = 0.0;
+goal_->pose.orientation.y = 0.0;
+goal_->pose.orientation.z = 0.0;
+goal_->pose.orientation.w = 1.0;
+goal_->header.frame_id = "map";
+goal_->header.stamp = now();
+send_goal();
+response->success = true;
+  \end{lstlisting}
+\end{lrbox}
+
+\noindent\begin{figure}[h]
+  \centering
+    \noindent\begin{tikzpicture}
+      \node [poseserver] (pose-server) {\usebox\poseserver};
+      \node[fill=white] at (pose-server.south) {POSE SERVER};
+      
+      \node [inception, above left=5.7cm and -4.625cm of pose-server] (do-work) {DO WORK};
+      \node [inception, above left=3.8cm and -4.625cm of pose-server] (get-pose) {GET POSE};
+      \node [inception, above left=1.9cm and -4.625cm of pose-server] (continue-work) {CONTINUE WORK};
+      \node[inception, inner xsep=1em, inner ysep=1em, fit=(do-work) (continue-work), above left=1.5cm and -5cm of pose-server] (plan-clients) {};
+      % \node [poseserver, above=1cm of pose-server, fit=(do-work) (continue-work)] (plan-clients) {PLANNING CLIENTS};  
+      \node[fill=white] at (plan-clients.south) {PLANNING CLIENTS};
+
+      \node [navigationclient, right=5cm of plan-clients] (nav-client) {\usebox\navigationclient};
+      \node[fill=white] at (nav-client.south) {NAVIGATION CLIENT};
+
+      \node [block, above=3cm of plan-clients] (plan-server) {PLANNING SERVER};
+      \node [block, right=7.9cm of plan-server] (nav-server) {NAVIGATION SERVER};
+
+      \draw [arrow] (plan-server) -- node [left] {plansys2\_msgs} node [right] {::msg::ActionExecution(?)} (plan-clients);
+      \draw [arrow] (nav-client) -- node [left] {nav2\_msgs::action} node [right] {::NavigateToPose} (nav-server);
+      \draw [arrow] (do-work.7) -- node [above] {float32 x, y} (nav-client.148);
+      \draw [arrow] (nav-client.154) -- node [below] {bool success} (do-work.353);
+      \draw [arrow] (get-pose.353) -| (pose-server.95);
+      \draw [arrow] (pose-server.85) |- node [above left] {float32 x, y} (get-pose.7);
+
+      \draw [arrow] (do-work) -- (get-pose);
+      \draw [arrow] (get-pose) -- (continue-work);
+
+  \end{tikzpicture}
+  \caption[Nodes interaction deepening]{\textbf{DO WORK}, \textbf{GET POSE} and \textbf{CONTINUE WORK} functions are shown in the next page.}
+\end{figure}
+
+\newpage
+
+\subsection*{DO WORK function}
+
+\noindent\begin{lstlisting}[language=C, style=CStyle, caption={Starts navigation with the given goal coordinates}]
+if(!is_initial_distance_set_){
+  room_goal_ = current_arguments_[GOAL_INDEX];
+  goal_position_ = labels_.at(room_goal_).at("center").get<std::vector<double>>();
+  
+  auto request = std::make_shared<planning_bridge_msgs::srv::StartNavigation::Request>();
+  request->x = goal_position_[0];
+  request->y = goal_position_[1];
+  
+  start_navigation_client_->async_send_request(request,
+  [this](rclcpp::Client<planning_bridge_msgs::srv::StartNavigation>::SharedFuture future){
+    auto result = future.get();
+    if(result->success) {
+      RCLCPP_INFO(get_logger(), "Navigation started");
+      get_pose();
+    } else {
+      RCLCPP_ERROR(get_logger(), "Navigation failed");
+    }
+  });
+  
+} else {
+  get_pose();
+}
+\end{lstlisting}
+
+\subsection*{GET POSE function}
+
+\noindent\begin{lstlisting}[language=C, style=CStyle, caption={Asks pose and sets initial and current poses}]
+current_pose_client_ptr_->async_send_request(
+  std::make_unique<planning_bridge_msgs::srv::CurrentPose::Request>(),
+  [this](rclcpp::Client<planning_bridge_msgs::srv::CurrentPose>::SharedFuture future) {
+    auto result = future.get();
+    if(!is_initial_distance_set_){
+      initial_distance_ = std::sqrt(std::pow(result->x - goal_position_[0], 2) +
+      std::pow(result->y - goal_position_[1], 2));
+      is_initial_distance_set_ = true;
+      current_distance_ = initial_distance_;
+    } else {
+      current_distance_ = std::sqrt(std::pow(result->x - goal_position_[0], 2) +
+      std::pow(result->y - goal_position_[1], 2));
+      if(current_distance_ > initial_distance_){
+        float temp = current_distance_;
+        current_distance_ = initial_distance_;
+        initial_distance_ = temp;
+      }
+    }
+    continue_work();
+    });
+\end{lstlisting}
+
+\newpage
+
+\subsection*{CONTINUE WORK function}
+
+\noindent\begin{lstlisting}[language=C, style=CStyle, caption={Sends feedback until the goal is reached}]
+progress_ = 1.0 - (current_distance_ /
+initial_distance_);
+
+if (progress_ < 0.95) {
+  send_feedback(progress_, "Move running");
+} else {
+  finish(true, 1.0, "Move completed");
+
+  progress_ = 0.0;
+  is_initial_distance_set_ = false;
+  std::cout << std::endl;
+}
+
+std::cout << "\r\e[K" << std::flush;
+std::cout << "Moving ... [" << std::min(100.0, progress_ * 100.0) << "%]" << std::flush;
+  \end{lstlisting}

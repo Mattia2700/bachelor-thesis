@@ -42,12 +42,15 @@
 \usepackage{tikz}
 \tikzset{
   block/.style={rectangle, draw, text width=0.15\textwidth, text centered, rounded corners, minimum height=3em, node distance=0.1\textwidth and 0.25\textwidth},
-  arrow/.style={-{Stealth[]}}
+  inception/.style={rectangle, draw, text width=0.2\textwidth, text centered, rounded corners, minimum height=3em, node distance=0.1\textwidth and 0.25\textwidth},
+  arrow/.style={-{Stealth[]}},
+  poseserver/.style={rectangle, draw, text width=\textwidth, text centered, rounded corners, minimum height=3em, node distance=0.1\textwidth},
+  navigationclient/.style={rectangle, draw, text width=, text centered, rounded corners, minimum height=3em, node distance=0.1\textwidth},
   }
-\usetikzlibrary{positioning,arrows.meta}
+\usetikzlibrary{positioning,arrows.meta,fit}
 \usepackage{multicol}
 
-\newcommand{\arguments}[2]{{\bf #1}: {\it #2}}
+\newcommand{\arguments}[2]{\textbf{#1}: \textit{#2}}
 
 \newif\ifapplymulticol
 \makeatletter
@@ -62,58 +65,7 @@
 
 \setlength\intextsep{0pt}
 
-\definecolor{delim}{RGB}{20,105,176}
-\colorlet{numb}{magenta!60!black}
-
-\lstdefinelanguage{json}{
-    morekeywords=[1]{label, center, max, min},
-    morekeywords=[2]{povo_1_258},
-    literate=
-     *{:}{{{\color{Red}{:}}}}{1}
-      {,}{{{\color{Red}{,}}}}{1}
-      {\{}{{{\color{Blue}{\{}}}}{1}
-      {\}}{{{\color{Blue}{\}}}}}{1}
-      {[}{{{\color{Blue}{[}}}}{1}
-      {]}{{{\color{Blue}{]}}}}{1}
-}
-
-\lstdefinestyle{jsonStile}{
-    frame=tb,
-    language=json,
-    columns=flexible,
-    keepspaces=true,
-    breaklines=true,
-    basicstyle=\small\ttfamily,
-    keywordstyle=[1]\color{Green},
-    keywordstyle=[2]\color{NavyBlue},
-}
-
-\definecolor{ipython_red}{RGB}{186, 33, 33}
-\definecolor{ipython_green}{RGB}{0, 128, 0}
-\definecolor{ipython_cyan}{RGB}{64, 128, 128}
-\definecolor{ipython_purple}{RGB}{170, 34, 255}
-
-\lstdefinestyle{PythonStile}{
-    frame=tb,
-    language=Python,
-    columns=flexible,
-    keepspaces=true,
-    breaklines=true,
-    identifierstyle=\color{black},
-    commentstyle=\color{ipython_cyan},
-    stringstyle=\color{ipython_red},
-    basicstyle=\small\ttfamily,
-    keywordstyle=[1]\color{ipython_green},
-    keywordstyle=[2]\color{ipython_purple}
-}
-
-\lstdefinelanguage{Python}{
-    morekeywords=[1]{open, load, dump, dirname, abspath, \_\_file\_\_, import, array, cos, sin, dot, dict},
-    sensitive=true,
-    morekeywords=[2]{translation, rot\_z, scale\_y, current\_folder, original\_name, dict\_name, original\_data, rot\_matrix, scale\_matrix, roto\_scaling, dict\_data, obj, k, v},
-    morecomment=[l]\#,
-    morestring=[b]",
-}
+\include{listings}
 
 %%%%%%%%%%%%%%
 % supporto lettere accentate

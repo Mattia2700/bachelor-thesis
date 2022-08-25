@@ -140,7 +140,7 @@ Four nodes have been created to let the robot moves autonomously:
     \item \textbf{two planning clients} (\code{ugv\_move}\footnote{\label{fn:node}Node name is equal to action name} and \code{ugv\_transporting\_uav\_move}\footnoteref{fn:node}): \textit{action executor clients listening for next action to complete}
 \end{itemize}
 
-The entire workflow is shown in \autoref{fig:bridge}
+The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be found in \autoref{cha:deepening}.
 
 \begin{figure}[h]
     \centering
@@ -156,7 +156,7 @@ The entire workflow is shown in \autoref{fig:bridge}
         \draw [arrow] (plan-clients.250) -- node [left] {float32 x, y} (nav-client.110);
         \draw [arrow] (nav-client.70) -- node [right] {bool success} (plan-clients.290);
         \draw [arrow] (plan-clients.6) -- (pose-server.174);
-        \draw [arrow] (pose-server.186) -- node [below] {float32 x, y} (plan-clients.354);        
+        \draw [arrow] (pose-server.186) -- node [below] {float32 x, y} (plan-clients.354);
     \end{tikzpicture}
     \caption[Nodes interaction]{
         On the left, the already existing servers, in the center, the customized clients written, and on the right, the customized server written. On the arrows, the messages exchanged.
@@ -183,6 +183,16 @@ It is an \textbf{action client} (called \code{ActionExecutorClient}), coming fro
 
 When a new task has been created and started, the action server would call the \code{do\_work()} method of the designed client, to let it know a new job needs to be completed.
 Inside this method the client transforms the \textbf{room name} (passed as goal) in \textbf{coordinates} and, if the goal was not already set, it passes it to the navigation client, making use of a custom service. After that, it asks \textbf{its current position} to the pose server (with another service) and uses it to set both the \textbf{initial and current position} (because the robot is not moving yet, the current position is the same as the initial one); using them, it returns a \textbf{percentage of completion} (0\%) to the action server.
-This method, then, is called \textbf{continuously} until the task is completed to give some feedback: now the initial position is already set (and as a result also the goal), so it continues to ask for its current position (in order) to calculate the \textbf{euclidean distance} from the initial one and then, it returns a new percentage of completion. Because the path used to reach the destination might not be \textbf{a straight line} and the distance employed is the euclidean one, it could happen the current distance is \textbf{greater} than the initial one: in this case, they are swapped to keep 0\% as the \textbf{lower bound} of completion, otherwise it would become negative. Choosing the maximum between percentage of completion and zero would lead to \textbf{loss of information}, and it is the reason why it has not been used. 
 
-$$ 1-\dfrac{current\_distance}{initial\_distance} $$ % inserire meglio formula con wrapfig (?)
+This method, then, is called \textbf{continuously} until the task is completed to give some feedback: now the initial position is already set (and as a result also the goal), so it continues to ask for its current position (in order) to calculate the \textbf{euclidean distance} from the initial one and then, it returns a new percentage of completion.
+
+\begin{wrapfigure}{r}{0.25\textwidth}
+    \begin{equation*}
+        1-\dfrac{current\_distance}{initial\_distance}
+    \end{equation*}
+    \caption{Percentage of completion}
+    \label{eq:percentage}
+\end{wrapfigure} 
+
+Because the path used to reach the destination might not be \textbf{a straight line} and the distance employed is the euclidean one, it could happen the current distance is \textbf{greater} than the initial one: 
+in this case, they are swapped to keep 0\% as the \textbf{lower bound} of completion, otherwise it would become negative. Choosing the maximum between percentage of completion and zero would lead to \textbf{loss of information}, and it is the reason why it has not been used. This can be clearly seen in \autoref{eq:percentage}.
