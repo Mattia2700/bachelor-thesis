@@ -1,6 +1,6 @@
-\chapter{Planning integration}
+\chapter{Planning integration} % add folder structure
 
-This chapter aims to \textbf{integrate} the planning part developed by \textit{Filippo Rossi}\footnote{His entire project is described in \autoref{sub:planning}} \cite{fr}. What already discussed in the previous chapters leads to a \textbf{working} version of the robot (it is able to move around), but does not have any practical use, because you need to set \textbf{where} you want the robot to go \textbf{every time}. This is the goal of this chapter: add some \textbf{missions control} (?), to give the robot some tasks it has to complete, without the needing of any \textbf{low-level human interaction}. Everything except the custom service messages can be found in \code{planning\_bridge} package in Figure (?).
+This chapter aims to \textbf{integrate} the planning part developed by \textit{Filippo Rossi}\footnote{His entire project is described in \autoref{sub:planning}} \cite{fr}. What already discussed in the previous chapters leads to a \textbf{working} version of the robot (it is able to move around), but does not have any practical use, because you need to set \textbf{where} you want the robot to go \textbf{every time}. This is the goal of this chapter: add some \textbf{missions control} (?), to give the robot some tasks it has to complete, without the needing of any \textbf{low-level human interaction}.
 
 \section{Modifications from original planning}
 
@@ -8,10 +8,12 @@ When the planning was developed, Filippo could not receive any feedback, since w
 
 % aggiungere entrance tag per entrata porta, dato che non è ben definita
 
-\subsection*{Change JSON structure}
+\subsection{Change JSON structure}
 \label{sub:json}
 
-Since that JSON file was written as a \textbf{list of dictionaries}, it would be required to iterate \textbf{over every element} and search for the one with the \textbf{requested name}, and when they match, it is possible to get the coordinates. Instead, for an easier use, a dictionary is created with the name of the room as \textbf{key} and the coordinates of that room center and boundaries as \textbf{value}. A before and after comparision (?) is shown in \autoref{lst:origjson} and \autoref{lst:modjson}. This operation has been performed with the \code{Python} script shown in \autoref{lst:script}.
+Thanks to Filippo's \textbf{waypoints extractor} and \code{cvat} \textbf{annotation software}, all the coordinate information can be found in a \textbf{JSON file}: when the robot is told to move in a certain room, only step to take is \textbf{searching} its name in the file and reading its \textbf{coordinates}.
+
+But, because this JSON file was written as a \textbf{list of dictionaries}, it would be required to iterate \textbf{over every element} and search for the one with the \textbf{requested name}, and when they match, it is possible to get the coordinates. Instead, for an easier use, a dictionary is created with the name of the room as \textbf{key} and the coordinates of that room center and boundaries as \textbf{value}. A before and after comparision (?) is shown in \autoref{lst:origjson} and \autoref{lst:modjson}. This operation has been performed with the \code{Python} script shown in \autoref{lst:script}.
 
 \noindent\begin{minipage}{0.425\textwidth}
 \noindent\begin{lstlisting}[
@@ -79,14 +81,12 @@ Since that JSON file was written as a \textbf{list of dictionaries}, it would be
 \end{minipage}
 
 
-\subsection*{Correct waypoint coordinates}
+\subsection{Correct waypoint coordinates}
 \label{sub:waypoints}
 
-Thanks to Filippo's \textbf{waypoints extractor} and \code{cvat} \textbf{annotation software}, all the coordinate information can be found in a \textbf{JSON file}: when the robot is told to move in a certain room, only step to take is \textbf{searching} its name in the file and reading its \textbf{coordinates}.
-But the mesh, the same described in \autoref{sub:map}, used for generating those waypoints is not the same of the real environment, and navigation map is rotated with respect to this one.
+In order to generate those waypoints inside the JSON file, Filippo used the same mesh described in \autoref{sub:map}, and, as already discussed, it does not match perfectly the real environment, and furthermore, the navigation map is rotated with respect to the mesh.
 
-Using \textit{Blender} \cite{blender}, after loading both mesh and map, some modifications that lead to a better result can be applied: by turning the mesh by \textbf{135 sexagesimal degrees counterclockwise} around the Z axis, scaling (up) the long side (Y axis) of the mesh \textbf{1.0925 times}, and translating 6.8210 meters along the short side (X axis) and \textbf{8.7180 meters} along the long side (Y axis). Luckily, when applying these transformations on the entire mesh you do it on its own points, and apply them on these waypoints in the JSON file is the same, without needing to repeat the annotation process from the beginning. These \textit{transformations} have been performed (?)
- with the Python script in \autoref{lst:script}
+So, using \textit{Blender} \cite{blender}, after loading both mesh and map, some modifications that lead to a better result has be found: by turning the mesh by \textbf{135 sexagesimal degrees counterclockwise} around the Z axis, scaling (up) the long side (Y axis) of the mesh \textbf{1.0925 times}, and translating 6.8210 meters along the short side (X axis) and \textbf{8.7180 meters} along the long side (Y axis). Luckily, when applying these transformations on the entire mesh you do it on its own points, and apply them on these waypoints in the JSON file is the same, without needing to repeat the annotation process from the beginning. These \textit{transformations} have been performed (?) with the Python script in \autoref{lst:script}
 
 \applymulticoltrue
 
@@ -125,22 +125,22 @@ for obj in original_data:
 
 \applymulticolfalse
 
-Rotation and scale matrices are calculated and fused together. Then(, as described in \autoref{sub:json},) the JSON structure is changed with dictionaries and each value of its corresponding key is transformed by applying the rotation-scale matrix and the translation vector. At the end, with \code{[0:2]}, only x and y coordinates are kept.
+Rotation and scale matrices are calculated and fused together. Then(, as described in \autoref{sub:json} (?),) the JSON structure is changed with dictionaries and each value of its corresponding key is transformed by applying the rotation-scale matrix and the translation vector. At the end, with \code{[0:2]}, only x and y coordinates are kept, since we are using a 2D navigation map.
 
-\subsection*{Remove stub nodes from execution}
+\subsection{Remove stub nodes from execution}
 
 Currently, the only actions supported are \code{ugv\_move} and \code{ugv\_transporting\_uav\_move}: although the name is different, they share the \textbf{same code} (they have been separated for planning reasons). For testing purposes, in the original planning some nodes were added to simulate \acrshort{ugv}s and \acrshort{uav}s: they were started at the beginning of the execution, but now these two have their real implementation, so the \textbf{stub ones} have been removed from the launch.
 
-\section{Task executors} % creare launch file e splittare i due nodi (?) cambiare con nuovo setup (?)
+\section{Task executors}
 
-Four nodes have been created to let the robot moves autonomously: 
+Four nodes have been created and are started together to let the robot moves autonomously: 
 \begin{itemize}
     \item \arguments{navigation client}{service and action client that sets the navigation goal when coordinates are received}
     \item \arguments{pose server}{service server responsible for returning the current pose of the robot when requested}
     \item \textbf{two planning clients} (\code{ugv\_move}\footnote{\label{fn:node}Node name is equal to action name} and \code{ugv\_transporting\_uav\_move}\footnoteref{fn:node}): \textit{action executor clients listening for next action to complete}
 \end{itemize}
 
-The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be found in \autoref{cha:deepening}.
+The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be found in \autoref{cha:deepening}. % change name to attachment (?)
 
 \begin{figure}[h]
     \centering
@@ -159,14 +159,14 @@ The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be
         \draw [arrow] (pose-server.186) -- node [below] {float32 x, y} (plan-clients.354);
     \end{tikzpicture}
     \caption[Nodes interaction]{
-        On the left, the already existing servers, in the center, the customized clients written, and on the right, the customized server written. On the arrows, the messages exchanged.
+        On the left, the already existing servers, in the center, the custom clients written, and on the right, the custom server written. On the arrows, the messages exchanged.
     }
     \label{fig:bridge}
 \end{figure}
 
 \subsection{Navigation client}
 
-This node is both a \textbf{service server} and an \textbf{action client}: the first is used to receive the coordinates from the planning client and the second to connect to the navigation action server and set the just received destination. It is called only \textbf{once}, when a new task is created.
+This node is both a \textbf{service server} and an \textbf{action client}: the first one is used to receive the coordinates from the planning clients, and then, using the second one, it connects to the navigation action server and sets the just received goal. It is called only \textbf{once}, when a new task is created.
 
 \subsection{Pose server}
 \label{sub:pose}
@@ -182,9 +182,9 @@ It is an \textbf{action client} (called \code{ActionExecutorClient}), coming fro
 } with the current percentage of completion, until the goal is \textbf{reached} (100\% completion).
 
 When a new task has been created and started, the action server would call the \code{do\_work()} method of the designed client, to let it know a new job needs to be completed.
-Inside this method the client transforms the \textbf{room name} (passed as goal) in \textbf{coordinates} and, if the goal was not already set, it passes it to the navigation client, making use of a custom service. After that, it asks \textbf{its current position} to the pose server (with another service) and uses it to set both the \textbf{initial and current position} (because the robot is not moving yet, the current position is the same as the initial one); using them, it returns a \textbf{percentage of completion} (0\%) to the action server.
+Inside this method the client transforms the \textbf{room name} (passed as goal) in \textbf{coordinates} and, if the goal was not already set, it passes it to the navigation client, making use of a custom service. After that, it asks \textbf{its current position} to the pose server (with another service) and uses it to set both the \textbf{initial and current position} (because the robot is not moving yet, the current position is the same as the initial one); using them, it returns a \textbf{percentage of completion} (0\%) to the planning server.
 
-This method, then, is called \textbf{continuously} until the task is completed to give some feedback: now the initial position is already set (and as a result also the goal), so it continues to ask for its current position (in order) to calculate the \textbf{euclidean distance} from the initial one and then, it returns a new percentage of completion.
+The \code{do\_work()} method, then, is called \textbf{continuously} until the task is completed to give some feedback: now the initial position is already set (and as a result also the goal), so it continues to ask only for its current position, to calculate the \textbf{euclidean distance} from the initial position and then, it returns a new percentage of completion.
 
 \begin{wrapfigure}{r}{0.25\textwidth}
     \begin{equation*}

@@ -1,4 +1,4 @@
-\chapter{Docker Image}
+\chapter{Docker Setup/Required packages (?)}
 \label{cha:dockerfile}
 
 The project depends on the following packages:
@@ -155,7 +155,7 @@ response->success = true;
 
 \newpage
 
-\subsection*{DO WORK function}
+\subsection{DO WORK function}
 
 \noindent\begin{lstlisting}[language=C, style=CStyle, caption={Starts navigation with the given goal coordinates}]
 if(!is_initial_distance_set_){
@@ -182,7 +182,7 @@ if(!is_initial_distance_set_){
 }
 \end{lstlisting}
 
-\subsection*{GET POSE function}
+\subsection{GET POSE function}
 
 \noindent\begin{lstlisting}[language=C, style=CStyle, caption={Asks pose and sets initial and current poses}]
 current_pose_client_ptr_->async_send_request(
@@ -209,7 +209,7 @@ current_pose_client_ptr_->async_send_request(
 
 \newpage
 
-\subsection*{CONTINUE WORK function}
+\subsection{CONTINUE WORK function}
 
 \noindent\begin{lstlisting}[language=C, style=CStyle, caption={Sends feedback until the goal is reached}]
 progress_ = 1.0 - (current_distance_ /

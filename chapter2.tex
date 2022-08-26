@@ -10,7 +10,7 @@ Before describing the entire project, we need to know what we are talking about.
     \item Docker
 \end{itemize}
 
-\section{\acrshort{ros}2} % add complete name as caption (?)
+\section{\acrshort{ros}2}
 
 \begin{wrapfigure}{l}{0.2\textwidth}
     \includegraphics[width=0.2\textwidth]{images/foxy}
@@ -18,14 +18,14 @@ Before describing the entire project, we need to know what we are talking about.
 
 \textit{\acrshort{ros}2, which stands for Robot Operative System 2, is a set of software libraries and tools for building robot applications.}\cite{ros2desc} On it, every process is a node and each node has the possibility to talk to other ones thanks to some channel of communications called topics using the publish/subscribe model.
 
-This version of \acrshort{ros}2, called \textbf{Foxy}, was used because it is possible to integrate the \textit{plansys2} libraries used for planning.
+This version of \acrshort{ros}2, called \textbf{Foxy Fitzroy}, was used because it is possible to integrate the \textit{plansys2} libraries used for planning.
 
 Thanks to \Acrshort{ros} \textit{hardware abstraction, low-level device control, implementation of commonly-used functionality, message-passing between processes, and package management}\cite{ros2help}, the developer can ignore specific hardware details and software implementations and focus only on the application itself. 
 
 This means that executing a \acrshort{ros} node on your own computer is the same of executing it on a robot, as long as you are using the same operative system (only \textbf{Ubuntu 20.04}) and the same external devices, if you are not simulating them.
 
 \section{Gazebo}
-\label{sec:gazebo} % add more info about gazebo (?)
+\label{sec:gazebo}
 
 \begin{wrapfigure}{r}{0.25\textwidth}
     \includegraphics[width=0.25\textwidth]{images/gazebo}
@@ -47,7 +47,7 @@ With the sensors and the plugins you are able to simulate lasers (e.g. lidars), 
 
 \section{\acrfull{nav2}}
 
-The Navigation Stack is a collection of packages of \acrshort{ros}2 providing useful tools for the navigation of your robot: path planning, localization, obstacle avoidance, recovery from collisions, mapping and so on\footnote{A detailed description can be found in \autoref{cha:navigation}.}. These packages were used as a basis for this project: in such a manner you do not have to worry about the navigation algorithms, you just need to pass sensor information, and they will do the rest; moreover, you can use the provided interfaces to customize and automate the whole process of navigation.
+The Navigation Stack is a collection of packages of \acrshort{ros}2 providing useful tools for the navigation of your robot: path planning, localization, obstacle avoidance, recovery from collisions, mapping and so on\footnote{A detailed description can be found in \autoref{cha:navigation}}. These packages were used as a basis for this project: in such a manner you do not have to worry about the navigation algorithms, you just need to pass sensor information, and they will do the rest; moreover, you can use the provided interfaces to customize and automate the whole process of navigation.
 
 It can be thought as a template for navigation systems with a generic configuration, but thanks to \Acrshort{ros}, you can set what parameters you want for each node easily with a YAML file: this will be parsed when you launch the navigation stack and the nodes will be configured accordingly.
 
@@ -72,4 +72,4 @@ Docker is a platform that let you separate your application using an isolated en
     \item permit development on any device \textbf{not running} necessarily \textbf{Ubuntu 20.04} (required from \acrshort{ros}2) as its OS
 \end{itemize}  
   
-Inside a Dockerfile, a file containing instructions on how to build an image\footnote{It is used as a starting point when launching a container} with your own configurations, were typed all the commands required to install the missing packages from the base image already containing basic \acrshort{ros}1 and \acrshort{ros}2 packages \cite{dockerimage}. The complete Dockerfile can be found in \autoref{cha:dockerfile}.
+Inside a Dockerfile, a file containing instructions on how to build an image\footnote{It is used as a starting point when launching a container} with your own configurations, were typed all the commands required to install the missing packages from the base image already containing basic \acrshort{ros}1 and \acrshort{ros}2 packages \cite{dockerimage}. The complete Docker setup/required packages (?) can be found in \autoref{cha:dockerfile}.

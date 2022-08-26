@@ -1,0 +1,84 @@
+\documentclass[epsfig,a4paper,11pt,titlepage,twoside,openany]{book}
+\usepackage[paperheight=29.7cm,paperwidth=21cm,outer=1.5cm,inner=2.5cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{dirtree}
+\usepackage{xpatch}
+\pagenumbering{gobble}
+
+\newlength{\upBranch} % shift up the text  lines <<<<
+\setlength{\upBranch}{0.7ex} % 
+
+\newlength{\tolineSpace} % blank space bellow text  lines  <<<
+\setlength{\tolineSpace}{1mm}% 
+
+\makeatletter
+
+\xpatchcmd{\dirtree} % root
+{\vbox{\@nameuse{DT@body@1}}}
+{\raisebox{-\tolineSpace}{\vbox{\@nameuse{DT@body@1}}}}
+{}{}    
+
+\xpatchcmd{\dirtree} % below space
+{\advance\dimen\z@ by-\@nameuse{DT@lastlevel@\the\DT@countiv}\relax}
+{\advance\dimen\z@ by-\tolineSpace \advance\dimen\z@ by-\@nameuse{DT@lastlevel@\the\DT@countiv}\relax}
+{}{}
+    
+\xpatchcmd{\dirtree}% shift up the text  lines
+{\kern\DT@sep\box\z@\endgraf}
+{\kern\DT@sep\raisebox{-\upBranch}{\box\z@}\endgraf}
+{}{}    
+
+\makeatother
+
+\DTsetlength{1em}{1em}{0em}{0.4pt}{0.4pt}       
+
+%\setlength{\DTbaselineskip}{12pt}  % minimum size for \footnotesize 
+%\renewcommand{\DTstyle}{\rmfamily\footnotesize} 
+    
+%\setlength{\DTbaselineskip}{16pt}  %minimum size for \normalsize
+%\renewcommand{\DTstyle}{\rmfamily\normalsize} 
+
+\setlength{\DTbaselineskip}{18pt} %minimum size for  \large
+\renewcommand{\DTstyle}{\rmfamily\large}    %
+
+%\setlength{\DTbaselineskip}{22pt} %minimum size for  \Large
+%\renewcommand{\DTstyle}{\rmfamily\Large}   %      
+
+\setlength{\baselineskip}{30pt}
+
+\setlength{\DTbaselineskip}{12pt}  % minimum size for footnotesize 
+\renewcommand{\DTstyle}{\rmfamily\footnotesize}
+
+\begin{document}
+
+\dirtree{%
+    .1 \textbf{ ground\_robots\_navigation}.
+    .2 \textbf{ config}.
+    .2 \textbf{ include}.
+    .3 \textbf{ ground\_robots\_navigation}.
+    .2 \textbf{ launch}.
+    .3 { navigation.launch.py}.
+    .2 \textbf{ maps}.
+    .3 { povo.pgm}.
+    .3 { povo.yaml}.
+    .2 \textbf{ params}.
+    .3 { nav2\_params.yaml}.
+    .2 \textbf{ rviz}.
+    .3 { nav2\_config\_sim.rviz} (?).
+    .3 { nav2\_config.rviz}.
+    .2 \textbf{ src}.
+}
+
+\end{document}
+
+\DTsetlength{1em}{1em}{0em}{0.4pt}{0.4pt}       
+
+% \setlength{\DTbaselineskip}{1pt} %minimum size for  \large
+% \renewcommand{\DTstyle}{\rmfamily\large}    %
+
+%\setlength{\DTbaselineskip}{22pt} %minimum size for  \Large
+%\renewcommand{\DTstyle}{\rmfamily\Large}   %   
+
+\setlength{\baselineskip}{30pt}
+
+\setlength{\DTbaselineskip}{12pt}  % minimum size for footnotesize 
+\renewcommand{\DTstyle}{\rmfamily\footnotesize}

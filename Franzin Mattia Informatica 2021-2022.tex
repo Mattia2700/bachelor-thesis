@@ -32,12 +32,11 @@
 \usepackage{wrapfig}
 \usepackage{subcaption}
 
-\usepackage{dirtree}
-\usepackage{xpatch}
-
 \usepackage{hyperref}
 
 \usepackage{chemarrow}
+
+\usepackage[export]{adjustbox}
 
 \usepackage{tikz}
 \tikzset{
@@ -76,7 +75,7 @@
 
 \singlespacing
 
-\usepackage[italian]{babel}
+\usepackage[english]{babel}
 
 \begin{document}
 % \begin{slashbreak}
@@ -118,7 +117,6 @@
       \titlespacing*{\chapter}{0pt}{0.59in}{0.02in}
       \titlespacing*{\section}{0pt}{0.20in}{0.02in}
       \titlespacing*{\subsection}{0pt}{0.10in}{0.02in} 
-      % Forse riattivare (?)
       
       % sommario
       % \input{chapter1}
@@ -144,6 +142,7 @@
       %
       % \input oppure \include
       %
+      \input{abstract}
       \input{chapter1}
       \input{chapter2}
       \input{chapter3}
@@ -194,7 +193,7 @@
         {\normalfont\Huge\bfseries}{Attachment \thechapter}{1em}{}
     % sezione Allegati - opzionale
     \appendix
-    \input{allegati}
+    \input{attachments}
     % \input{acronyms}
     \printnoidxglossaries
 
