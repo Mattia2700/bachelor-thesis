@@ -1,19 +1,4 @@
-\lstset{frame=tb,
-  language=XML,
-  basicstyle=\ttfamily,
-  columns=flexible,
-  showstringspaces=false,
-  commentstyle=\color{gray}\upshape
-}
-  
-\lstdefinelanguage{XML}{
-  morestring=[b]",
-  morecomment=[s]{<?}{?>},
-  stringstyle=\color{Orange},
-  identifierstyle=\color{Red},
-  keywordstyle=\color{Black},
-  morekeywords={type,pkg,name,args}
-}
+% migliorare parte sotto (?)
 
 \chapter{Working in a real environment}
 \label{cha:realworld}
@@ -59,10 +44,11 @@ In order to start the required nodes, a custom launch file was created. A launch
 
 \begin{lstlisting}[
   label={lst:lidarpos},
-  language=XML,
+  language=xml,
+  style=xmlStyle
   ]
-    <node pkg="tf" type="static_transform_publisher" name="lidar_position"
-        args="0 0 0.45 0 0 0 base_link lidar_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="lidar_position"
+    args="0 0 0.45 0 0 0 base_link lidar_link 100" />
 \end{lstlisting}
 
 This is a node (with a custom name) of the \code{tf} package of \acrshort{ros}1, \textit{a package that lets the user keep track of multiple coordinate frames over time [...] and lets the user transform points, vectors, etc. between any two coordinate frames at any desired point in time}. \cite{tf} The node executable is called \code{static\_transform\_publisher} and it is used to \textit{publish a static coordinate transform to tf using an x/y/z offset in meters and roll/pitch/yaw in radians [...]. The period, in milliseconds, specifies how often to send a transform}. \cite{tf} 

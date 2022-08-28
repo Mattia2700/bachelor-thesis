@@ -107,3 +107,21 @@
     keywordstyle=\color{Red},
     stringstyle=\color{RoyalBlue},
 }
+
+\lstdefinelanguage{xml}{
+  morestring=[b]",
+  morecomment=[s]{<?}{?>},
+  morekeywords={type,pkg,name,args}
+}
+
+\lstdefinestyle{xmlStyle}{
+    frame=tb,
+    language=XML,
+    basicstyle=\ttfamily,
+    columns=flexible,
+    showstringspaces=false,
+    commentstyle=\color{gray}\upshape,
+    stringstyle=\color{Orange},
+    identifierstyle=\color{Red},
+    keywordstyle=\color{Black}
+}

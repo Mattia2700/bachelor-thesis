@@ -1,4 +1,5 @@
 \chapter{Planning integration} % add folder structure
+\label{cha:planningbridge}
 
 This chapter aims to \textbf{integrate} the planning part developed by \textit{Filippo Rossi}\footnote{His entire project is described in \autoref{sub:planning}} \cite{fr}. What already discussed in the previous chapters leads to a \textbf{working} version of the robot (it is able to move around), but does not have any practical use, because you need to set \textbf{where} you want the robot to go \textbf{every time}. This is the goal of this chapter: add some \textbf{missions control} (?), to give the robot some tasks it has to complete, without the needing of any \textbf{low-level human interaction}.
 
@@ -129,7 +130,7 @@ Rotation and scale matrices are calculated and fused together. Then(, as describ
 
 \subsection{Remove stub nodes from execution}
 
-Currently, the only actions supported are \code{ugv\_move} and \code{ugv\_transporting\_uav\_move}: although the name is different, they share the \textbf{same code} (they have been separated for planning reasons). For testing purposes, in the original planning some nodes were added to simulate \acrshort{ugv}s and \acrshort{uav}s: they were started at the beginning of the execution, but now these two have their real implementation, so the \textbf{stub ones} have been removed from the launch.
+Currently, the only actions supported are \code{ugv\_move} and \code{ugv\_transporting\_uav\_move}: although the name is different, they share the \textbf{same code} (they have been separated for planning reasons). For testing purposes, in the original planning some nodes were added to simulate \acrshort{ugvs} and \acrshort{uavs}: they were started at the beginning of the execution, but now these two have their real implementation, so the \textbf{stub ones} have been removed from the launch.
 
 \section{Task executors}
 
@@ -140,7 +141,7 @@ Four nodes have been created and are started together to let the robot moves aut
     \item \textbf{two planning clients} (\code{ugv\_move}\footnote{\label{fn:node}Node name is equal to action name} and \code{ugv\_transporting\_uav\_move}\footnoteref{fn:node}): \textit{action executor clients listening for next action to complete}
 \end{itemize}
 
-The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be found in \autoref{cha:deepening}. % change name to attachment (?)
+The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be found in Attachment \ref{cha:deepening}. % change name to attachment (?)
 
 \begin{figure}[h]
     \centering

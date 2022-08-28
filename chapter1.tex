@@ -3,40 +3,20 @@
 
 \section{Summary}
 
-The purpose of this project is to develop (developing?) a fullstack (?) system for surveillance proposes using mobile robots, both ground and flying ones.
-Since the project is quite big (?), it is shared with other two students with each one of us focusing into a specific subtask (?). It is constituted of: 
+The goal of this project, as described in the abstract, aims to develop a complete system for \textbf{surveillance proposes} using ground robots, but also flying ones.
+Since the project is quite complex, it is \textbf{shared} among other two students, with each one of us focusing into a specific subtask. It is constituted of: 
 
 \begin{itemize}
-  \item a planning system, responsible for dispatching the surveillance tasks to UGVs and/or UAVs in the best possible way based on their battery charge, giving them some waypoints to follow in order to follow the optimal path.
-  \item a solution to autonomously control the drones (UAVs robots)
-  \item a solution to autonomously control ground robots avoiding dynamic obstacles (UGVs robots)
+  \item a \textbf{planning system}, responsible for dispatching the surveillance tasks to \acrfull{ugvs} and/or \acrfull{uavs} the best possible way, based on their battery charge, giving them some waypoints to reach 
+  \item a solution to autonomously control the \textbf{drones} (\acrshort{uavs})
+  \item a solution to autonomously control ground robots avoiding \textbf{dynamic obstacles} (\acrshort{ugvs})
 \end{itemize}
 
-Basically, all the work is done using \acrshort{ros}2\footnote{The Robot Operating System (ROS) is a set of software libraries and tools for building robot applications\cite{ros2desc}} which gives us the possibility to work separately on your own project, and since everyone creates his custom packages, at the end we only need to put everything together.
+Everything is developed using \acrshort{ros}2, that gives us the possibility to work \textbf{separately} on your own project, and thanks to \acrshort{ros} \textbf{modularity}, at the end we only need to put everything together.
 
-A more detailed description can be found in the first chapter.
+The reason behind my choice about the internship and this consequent thesis is leaded by my \textbf{growing interest} in this topic: just some month before taking part in this work, I attended a course about \textit{robotic fundamentals}\cite{intro2robotics} where we also developed a project quite similar to this, but with a robotic manipulator.
 
-The reason behind my choice about the internship and this consequent thesis is leaded by my growing interest in this topic: just some month before taking part in this work I attended a course about {\it robotic fundamentals}\cite{intro2robotics} in which I had to work in a custom project similar to this, but using a manipulator.
-
-For me, is the possibility to give to some inanimate object, like a wheeled robot or a manipulator, something that could be described as intelligence, the ability to perform some tasks in response of other ones, figuring out which ones are the best for every particular situation. Another aspect I really like is the (inbuilt) utility which carries (within) itself: this is only an educational project, but it is easy to imagine an industrial application, for example for patrol purposes. // ?
-
-Some challenges I decided to took are the choice of the new version of ROS, with some great improves respect to the older one, but with less community support, and also working for the first time with a mobile robot.
-
-Parlare del tipo di robot, diff drive, ecc. (?)
-
-% Il sommario dell’elaborato consiste al massimo di 3 pagine e deve contenere le seguenti informazioni:
-% \begin{itemize}
-%   \item contesto e motivazioni 
-%   \item breve riassunto del problema affrontato
-%   \item tecniche utilizzate e/o sviluppate
-%   \item risultati raggiunti, sottolineando il contributo personale del laureando/a
-% \end{itemize}
-
-% Tipo:
-% - descrizione tesi e interesse robotica
-% - far muovere robot in un ambiente seguendo le istruzioni ricevute ed evitando ostacoli non previsti
-% - ROS2, nav2, waypoint follower
-% - il robot si muove e fa foto
+For me, is the possibility to give to some inanimate object, like a wheeled robot or a manipulator, something that could be described as \textbf{intelligence}, the ability to perform some tasks in response of other ones, figuring out which ones are the \textbf{best suitable} for each particular situation. Some challenges I decided to took are: the choice of the \textbf{new version} of ROS, with some great improves respect to the older one, but with less community support, and also working for the first time on a \textbf{mobile robot}.
 
 \section{Other projects involved}
 
@@ -47,7 +27,7 @@ What follows is a brief description of the work done by the other two students t
 
 It is brain of the system, it lets the user choose which type of robot he wants to use (only ground robots or drones with ground robots as auxiliary), and then it dispatches the tasks to the right robots. It is possible to define multiple goals for each robot, and once done, the planner will start figuring out the best way to organize the fleet.
 
-In order to resolve a problem it must have been defined a domain: this contains a description of space you are interested in, in which you could specify reachable targets, making use of a set of predefined actions, requiring some preconditions to be met before executing them and causing some effects to the environment. In order to solve a problem, we need to check if its domain is compatible with the planning one, or in other words, if the goal is achievable, and if so, it is possible to look for a solution (i.e., a sequence of actions to be performed).
+In order to resolve a problem it must have been defined a \textbf{domain}: this contains a description of space you are interested in, in which you could specify \textbf{reachable targets}, making use of a set of \textbf{predefined actions}, that requires some \textbf{preconditions} to be met before executing and causes some \textbf{effects} to the environment. In order to solve a problem, we need to check if its domain is \textbf{compatible} with the planning one, or in other words, if the goal is achievable, and if so, it is possible to look for a \textbf{solution} (i.e., a sequence of actions to be performed).
 
 Each robot waits for new commands to be received, with one specific implementation for each type of task. Here follows a list of actions currently available:
 
@@ -55,7 +35,7 @@ Each robot waits for new commands to be received, with one specific implementati
 
 \begin{minipage}[h]{0.45\textwidth}
   \centering
-  \textbf{\acrshort{uav}s actions}
+  \textbf{\acrshort{uavs} actions}
   \begin{itemize}
     \centering
     \item \code{uav\_move}
@@ -66,7 +46,7 @@ Each robot waits for new commands to be received, with one specific implementati
 \end{minipage}
 \begin{minipage}[h]{0.45\textwidth}
   \centering
-  \textbf{\acrshort{ugv}s actions}
+  \textbf{\acrshort{ugvs} actions}
     \begin{itemize}
       \centering
       \item \code{ugv\_move}
@@ -78,22 +58,32 @@ Each robot waits for new commands to be received, with one specific implementati
 
 \bigskip
 
-These actions are the only ones the planner uses when a problem is specified to find a possible outcome: the output is a waterfall of actions that should be done, and once is completed it is possible to move to the next one. The implementation is left to whom works on that robot, because of their better understanding of that particular robot.
+These actions are the only ones the planner uses when a problem is specified to find a possible outcome: the output are \textbf{waterfall actions} that should be done, so when one is completed it is possible to move to the next one. The implementation is left to whom works on that robot, because of their \textbf{better understanding} of that particular robot.
 
-But, speaking about movement, we need some coordinates. These are extracted from the 3D mesh and thanks to an annotation program it is possible to assign them a name: in this way instead of using a bunch of numbers, we use the name of the room, and their relationship is defined in a file. Each room is then connected to the others by default.
+But, speaking about movement, we need some \textbf{coordinates}. These are extracted from the 3D mesh and thanks to an \textbf{annotation program} it is possible to assign them a name: in this way instead of using a bunch of numbers, we use the name of the room, and their relationship is defined in a file. Each room is then \textbf{connected} to the others by default.
 
-Thanks to a web interface, communicating with \acrshort{ros}2 using \textbf{rosbridge} package and \textbf{websockets} (?), a user can define where the robots initially are and where they should go, and by pressing only a button they will start moving.   
+Thanks to a web interface, communicating with \acrshort{ros}2 using \textbf{rosbridge} (it makes use of \textbf{websockets}) (?), a user can define where the robots initially are and where they should go, and by pressing only a button they will start moving.   
 
 \subsection{Drones control}
 
-This project aims to control the drones autonomously: in order to do that the drones are equipped with an autopilot module called \textit{Pixhawk 4}. In such a manner you do not need to control the drones manually (i.e., setting the motors speed), but you can just send commands (e.g. move forward or backward, turn left or right) and the autopilot will do the rest. Luckily, there is a bridge that permits the communication between this module itself and \acrshort{ros}2, so you are able to create subscribers and publishers nodes that interface directly with \textbf{PX4 UORB topics}\cite{px4}.
+This project aims to control the drones \textbf{autonomously}: in order to do that the drones are equipped with an \textbf{autopilot module} called \textit{Pixhawk 4}. In such a manner you do not need to control the drones \textbf{manually} (i.e., setting the motors speed), but you can just send commands (e.g. move forward or backward, turn left or right) and the autopilot will do the rest. Luckily, there is a \textbf{bridge} that permits the communication between this module and \acrshort{ros}2, so you are able to create subscribers and publishers nodes that interface \textbf{directly} with \textbf{PX4 UORB topics}\cite{px4}.
 
-The main command that is continuously sent is called \textbf{offboard}: it let the drone know there is still someone that wants to control it, otherwise it will land, for security reasons. The other one is \textbf{TrajectorySetPoint} which lets you set the goal position and orientation of the drone; passing only one point could not be enough, and this is the reason behind the choice of interpolating initial and final position with a Catmull-Rom spline, in order to have a smoother trajectory\footnote{It is also important to choose how many points you want to add to the trajectory, because higher the number, the smoother the trajectory will be, but it will take more time to execute it. On the other hand, lower the number, it will take less time to execute it, but it will be less smooth}.
+The main command that is continuously sent is called \textbf{offboard}: it let the drone know there is still someone that wants to control it, otherwise it will land, for security reasons. The other one is \textbf{TrajectorySetPoint} which lets you set the goal position and orientation of the drone; then, initial and final position are \textbf{interpolated} with a \textbf{Catmull-Rom spline}, in order to have a smoother trajectory.
 
-The drone uses GPS to know where it is, but for testing purposes in the real world, the room chosen could not provide the necessary signal, so it was used OptiTrack cameras to simulate it. Thanks to some reflective surfaces, the eight cameras can estimate its position and orientation, providing a temporary alternative to GPS data, but for a limited space.
+The drone uses \textbf{GPS} to know where it is, but for testing purposes in the real world, the room chosen could not provide the necessary signal, so it was used \textbf{OptiTrack cameras} to simulate it. Thanks to some \textbf{reflective surfaces}, the eight cameras can \textbf{estimate} its position and orientation, providing a \textbf{temporary alternative} to GPS data, but it works only inside a limited space.
 
-But, before testing the drone in the real world, with possible catastrophic consequences, it is important to be sure that it works in a simulation at least; here Gazebo\footnote{A simulation suite, will be described as well in \autoref{sec:gazebo}} comes to help.
-
-When testing with Gazebo, only the position information could be read directly from the interface provided by the program itself, while the orientation one comes from the controller bridge: these data are then fused together inside a node and sent to the drone to give it feedback of its actions\footnote{This is called \textbf{odometry}}. Speaking about the real environment, if GPS is available it will be possible to obtain position and orientation information directly from the drone, so the setup is quite the same. 
+But, before testing the drone in the real world, with possible catastrophic consequences, it is important to be sure that it works in a \textbf{simulation} at least; here Gazebo\footnote{A simulation suite, will be described as well in \autoref{sec:gazebo}} comes to help. When testing with Gazebo, only the position information could be read directly from the interface provided by the program itself, while the orientation one comes from the controller bridge: these data are then fused together inside a node and sent to the drone to give it feedback of its actions\footnote{This is called \textbf{odometry}}. Speaking about the real environment, if GPS is available it will be possible to obtain position and orientation information directly from the drone, so the setup is quite the same. 
 
 With everything put together, the drone can be controlled autonomously.
+
+\subsection{Thesis outline}
+
+This thesis is structured as follows:
+\begin{itemize}
+  \item \textbf{\autoref{cha:techstack}} describes software and libraries employed in the development of the system, for a better understanding;
+  \item \textbf{\autoref{cha:realworld}} shows the steps needed to implement the system with real robots;
+  \item \textbf{\autoref{cha:simworld}} covers the simulation part, developing both a simulated environment and a robot;
+  \item \textbf{\autoref{cha:navigation}} introduces the navigation system, and shows how it is applied to this project;
+  \item \textbf{\autoref{cha:planningbridge}} describes how the planning part was integrated with everything else, with the help of custom bridge nodes;
+  \item \textbf{\autoref{cha:futureworks}} discusses possible further developments and improvements.
+\end{itemize}
