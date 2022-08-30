@@ -1,5 +1,3 @@
-% Parlare del tipo di robot, diff drive, ecc. (?), sistemare parte ground_robot_navigation, spiegando in generale, non nello specifico
-
 \chapter{Navigation}
 \label{cha:navigation}
 
@@ -66,48 +64,25 @@ All the previous nodes interface with \textbf{Lifecycle Manager}, which brings \
     \caption{Sequence of service calls when startup is requested}
 \end{figure}
 
-\section{\code{ground\_robot\_navigation} package integration}
+\section{Navigation setup}
 
-\begin{wrapfigure}{l}{0.35\textwidth}
+\begin{wrapfigure}[15]{r}{0.35\textwidth}
     \includegraphics[width=0.35\textwidth]{images/nav_folder}
     \caption{Navigation folder}
 \end{wrapfigure}
 
-Everything required to navigating through the environment is provided by \code{ground\_robot\_navigation} package. The complete structure is shown in \autoref{fig:folder}
+% sistemare altezza lidar? 0.45 invece di 0.41 come su shelfino (?)
 
-% TODO: sistemare folder structure (togliere v2 da urdf e aggiugnere "..." se una cartella contiene altri file; sistemare altezza lidar? 0.45 invece di 0.41 come su shelfino?)
+Regardless if the robot is real or simulated, there are always a \code{scan}, \code{odom} and \code{cmd\_vel} topic and a \code{map}, \code{odom} and \code{base\_link}\footnote{All the other links of the robot are connected to the last one, the root one} frame. What is still missing is a way to pass this information to \acrshort{nav2}.
 
-Regardless if the robot is real or simulated, there are always a \code{scan}, \code{odom} and \code{cmd\_vel} topic and a \code{map}, \code{odom} and \code{base\_link}\footnote{All the other links of the robot are connected to the last one, the root one} frame. What is still missing is a way to pass this information to \acrshort{nav2} and here comes \code{ground-robot} package, designed specifically for this project.
-
-Inside \code{\acrshort{rviz}} folder there are two \textbf{configuration files} which are going to be loaded when the program starts executing: in the \textit{\_real} one, only some link/joint names are \textbf{missing} because they are no longer simulated and there are no such frame transformations. % check se ne basta uno o no (?)
-
-Folders like \code{include} or \code{src} are left even if empty in the project folder, because it is possible to \textbf{integrate custom algorithms} inside the \acrlong{nav2}, thanks to \code{nav2\_core} package. The same applies for \code{config} one, where you can put your own configuration files, how it was done originally when using \acrfull{ekf} to estimate robot odemetry\footnote{Later removed because of its buggy behavior}, fusing multiple sensors.
-
-\code{params} folder contains the parameters file described in the beginning of \autoref{cha:navigation}.
-
-Inside the \code{launch} folder there is the script used to \textbf{start} the entire \textbf{navigation system}; normally it launches the version with \textbf{real} environment and robot. Here follows a list of the possible arguments you can pass as $<$name$>$:=$<$value$>$ pairs: % (?)
-
+When comes to set navigation properties, the most important is \code{costmap}, which splits into a global and a local one. Here follows a short description:
 \begin{itemize}
-    \item \arguments{use\_namespace/namespace}{whether to apply a namespace and its name}
-    \item \arguments{autostart}{if \acrshort{nav2} should be automatically started}
-    \item \arguments{slam}{whether to run \acrshort{slam}}
-    \item \arguments{params\_file}{full path to parameters file to use for navigation nodes}
-    \item \arguments{bt\_xml\_filename}{full path to the behavior tree xml file to use}
-    \item \arguments{map}{full path to map file to load}
-    \item \arguments{use\_simulator}{whether to start the simulator}
-    \item \arguments{headless}{whether to execute Gazebo client \acrshort{gui}}
-    \item \arguments{use\_sim\_time}{whether to use simulation time, starting from zero}
-    \item \arguments{use\_robot\_state\_pub}{whether to start the robot joint state publisher}
-    \item \arguments{world}{full path to the world model file to load}
-    \item \arguments{use\_rviz}{whether to start \acrshort{rviz}}
-    \item \arguments{rviz\_config\_file}{full path to the RVIZ config file to use}
-    \item \arguments{model}{full path to robot urdf file for \acrshort{rviz}}
+    \item \textbf{Global}: it is created on the basis of the map provided, saved from \acrshort{slam}, to create the \textbf{general zones} where the robot can and cannot move; it also contains information about how much distance the robot should keep \textbf{from the walls}; used for planning paths.
+    \item \textbf{Local}: it makes use of the lidar data to create the \textbf{actual zones} where the robot can and cannot move; in this case, the data coming is dynamic, and it is used to adapt the robot's behavior to changes in the environment (e.g. not expected obstacles, performing \textbf{obstacle avoidance}).
 \end{itemize}
 
-\bigskip
+In order to automatically visualize robot on the environment on \acrshort{rviz}, a configuration file has been created: it keeps track of the map, the costmaps, the robot shape (described in the \acrshort{urdf} file as discussed in \autoref{sub:robot}), the lidar and the odom frame. 
 
-If you want to start a simulation, just set \code{use\_simulator} to \textit{true} and change \code{rviz\_config\_file} path; if you want to \textbf{disable} the \acrfull{gui} of Gazebo, set also \textbf{headless} to \textit{true}.
+The map currently used has been created using \acrshort{slam}, and since it is no more possible to control the robot graphically with \acrshort{rviz}, another way has to be found: the solution is the \code{joy} driver package, that makes an \textbf{Xbox controller} capable of setting wheels velocity over \code{cmd\_vel} topic using \textbf{Bluetooth}.
 
-% parlare di velocità lineare e angolare
-% odom su simulazione
-% sostituire base_laser con lidar_link e provare a lasciare i joint rimossi (?)
+Everything is then put together inside a \textbf{launch file}, which is a custom Python script; on its inside are described what \textbf{nodes} should be started, and also \textbf{parameters} that could be passed from command line(overriding their default value). For example, if you want to start a simulation, you have to set \code{use\_simulator} parameter to \textit{true} (normally it is \textit{false}); the same goes for \textbf{disabling} the \acrfull{gui} of Gazebo\footnote{Simulator}: you can set \textbf{headless} to \textit{true}. These parameters, as just shown, can be used to perform \textbf{conditional checks}, in order to decide whether a node should be started or not.

@@ -70,6 +70,8 @@ Docker is a platform that let you separate your application using an isolated en
     \item \textbf{separate} this project workspace from all the other ones, to \textbf{avoid conflicts}
     \item keep the workspace \textbf{equal} for \textbf{every device} (real robot or simply a computer)
     \item permit development on any device \textbf{not running} necessarily \textbf{Ubuntu 20.04} (required from \acrshort{ros}2) as its OS
-\end{itemize}  
-  
-Inside a Dockerfile, a file containing instructions on how to build an image\footnote{It is used as a starting point when launching a container} with your own configurations, were typed all the commands required to install the missing packages from the base image already containing basic \acrshort{ros}1 and \acrshort{ros}2 packages \cite{dockerimage}. The complete Docker setup can be found in \autoref{cha:dockerfile}.
+\end{itemize}
+
+To be more precise, inside a Dockerfile\footnote{A file containing instructions about how to build an image, used as a starting point when launching a container, with the desired packages and configurations}, after pulling data from a prebuilt image\cite{dockerimage}, were typed all the commands required to install missing packages.
+
+Using just an image is \textbf{not enough}, because you have to set up and launch your project \textbf{manually} every time: a plugin called \code{docker compose} helps in this process. It lets you specify \textbf{services} (i.e. specific actions to perform), and they will be executed automatically in separated containers (in this case, using the image defined above as a starting point), in an order that satisfies the dependencies between them.

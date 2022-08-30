@@ -1,5 +1,5 @@
 \chapter{Results and Future works}
-\label{cha:futureworks} %(?)
+\label{cha:futureworks}
 
 \section{Conclusion}
 
@@ -13,7 +13,7 @@ Here it is a possible list of missing or incomplete features that can be impleme
 
 \item Currently, of three \textit{shelfino} robots, two are working, and only one is \textbf{accessible} through the network, necessary to set it up for the current project: although it should have been a multi-robot system, it has only been tested with one, for obvious reasons. Once this issue is resolved, a multi-robot test could be performed.
 
-\item Because of \textbf{asynchronous} development of each project, on the planning part was assumed that only \acrshort{uavs} are capable of \textbf{taking photos}, even if it could be done also with \acrshort{ugvs}: the implementation would be quite straightforward. Right now, \acrshort{ugvs} are only moving around, without a surveillance task, except for carrying \acrshort{uavs}. (?) 
+\item Because of \textbf{asynchronous} development of each project, on the planning part was assumed that only \acrshort{uavs} are capable of \textbf{taking photos}, even if it could be done also with \acrshort{ugvs}: the implementation would be quite straightforward. Right now, \acrshort{ugvs} are only moving around, without a surveillance task, if you do not consider carrying \acrshort{uavs} on its top.
 
 \item From the specific actions designed for \acrshort{ugvs}, only \code{movement} and \code{move\_with\_uav} ones were implemented, as opposed to \code{battery\_managment} and \code{charge} operations, because there is \textbf{no way} to interface with batteries and auto-charging them is not possible since a \textbf{missing infrastructure} is needed; in other words, such actions, are possible only manually (with voltmeter and cables).
 
@@ -21,8 +21,6 @@ Here it is a possible list of missing or incomplete features that can be impleme
 
 % \item Talking about the navigation part, the obstacle avoidance could be enhanced, especially in the case of dynamic obstacles, because the robot sometimes takes some time to figure out what is going on and could end up colliding with them. A possible workaround could be increasing the minimum distance that should be kept between the robot and the unexpected obstacle, with some recovery action, like going back and replanning the path. A problem could also be the \code{ros1\_bridge} that adds some delay when exchanging messages between \acrshort{ros}1 and \acrshort{ros}2, ending up receiving lidar data not instantaneously. (?)
 
-\item Improve the map, creating a custom one for simulation and keeping the current (or creating a more complete) one for the real world. If a better mesh is available, \acrshort{slam} and waypoint generation in simulation and real world would be the same, and then you do not have to \textbf{switch} from one to another every time.
-
-% \item Add docker compose (?)
+\item Improve the map, creating a custom one for simulation and keeping the current one for the real world. If a better mesh is available, \acrshort{slam} and waypoint generation in simulation and real world would be the same, and then you do not have to \textbf{switch} from one to another every time.
 
 \end{itemize}

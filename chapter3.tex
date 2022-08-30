@@ -1,15 +1,16 @@
-% migliorare parte sotto (?)
+% Parlare del tipo di robot, diff drive, ecc. (?)
 
 \chapter{Working in a real environment}
 \label{cha:realworld}
 
-Talking about the real world, we need a real robot; the one used comes from the \acrfull{disi} of University of Trento.
-A photo of the robot is shown in \autoref{fig:shelfino}. % (?)
+First thing we need is the robot: this projects makes use of the one shown in \autoref{fig:shelfino}, and it comes from \acrfull{disi} of University of Trento.
+
+\bigskip
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.6\textwidth]{images/nav2\_architecture}
-  \caption{The, so called, \textit{shelfino} robot}
+  \includegraphics[width=0.5\textwidth]{images/shelfino}
+  \caption{The, so called, \textit{shelfino (one)} robot}
   \label{fig:shelfino}
 \end{figure}
 
@@ -40,7 +41,7 @@ In order to start the required nodes, a custom launch file was created. A launch
     \item \code{odom\_node}
 \end{itemize}
 
-\subsubsection{lidar\_position} % forse togliere e forse  mettere 0.43 (?)
+\subsubsection{lidar\_position} % forse togliere e forse  mettere 0.43 (?), dire che è stata fatta su ros2 ora
 
 \begin{lstlisting}[
   label={lst:lidarpos},
@@ -48,11 +49,11 @@ In order to start the required nodes, a custom launch file was created. A launch
   style=xmlStyle
   ]
   <node pkg="tf" type="static_transform_publisher" name="lidar_position"
-    args="0 0 0.45 0 0 0 base_link lidar_link 100" />
+    args="0 0 0.45 0 0 0 base_link base_laser 10" />
 \end{lstlisting}
 
 This is a node (with a custom name) of the \code{tf} package of \acrshort{ros}1, \textit{a package that lets the user keep track of multiple coordinate frames over time [...] and lets the user transform points, vectors, etc. between any two coordinate frames at any desired point in time}. \cite{tf} The node executable is called \code{static\_transform\_publisher} and it is used to \textit{publish a static coordinate transform to tf using an x/y/z offset in meters and roll/pitch/yaw in radians [...]. The period, in milliseconds, specifies how often to send a transform}. \cite{tf} 
-As \autoref{lst:lidarpos} shows, here it is used to describe the \textbf{transformation} between \code{base\_link}, the root frame (located on the ground under the robot, in the origin) and \code{lidar\_link} (0.45 meters above) every \code{100ms}. So when some points are returned by the laser scans, we also know the height, not otherwise specified, since it is a 2D scan.  
+As \autoref{lst:lidarpos} shows, here it is used to describe the \textbf{transformation} between \code{base\_link}, the root frame (located on the ground under the robot, in the origin) and \code{lidar\_link} (0.45 meters above) every \code{10ms}. So when some points are returned by the laser scans, we also know the height, not otherwise specified, since it is a 2D scan. For this project, only frequency was raised, from one message every \code{100ms} to one every \code{10ms}.
 
 \subsubsection{hw\_interface}
 

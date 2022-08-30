@@ -14,7 +14,7 @@ When the planning was developed, Filippo could not receive any feedback, since w
 
 Thanks to Filippo's \textbf{waypoints extractor} and \code{cvat} \textbf{annotation software}, all the coordinate information can be found in a \textbf{JSON file}: when the robot is told to move in a certain room, only step to take is \textbf{searching} its name in the file and reading its \textbf{coordinates}.
 
-But, because this JSON file was written as a \textbf{list of dictionaries}, it would be required to iterate \textbf{over every element} and search for the one with the \textbf{requested name}, and when they match, it is possible to get the coordinates. Instead, for an easier use, a dictionary is created with the name of the room as \textbf{key} and the coordinates of that room center and boundaries as \textbf{value}. A before and after comparision (?) is shown in \autoref{lst:origjson} and \autoref{lst:modjson}. This operation has been performed with the \code{Python} script shown in \autoref{lst:script}.
+But, because this JSON file was written as a \textbf{list of dictionaries}, it would be required to iterate \textbf{over every element} and search for the one with the \textbf{requested name}, and when they match, it is possible to get the coordinates. Instead, for an easier use, a dictionary is created with the name of the room as \textbf{key} and the coordinates of its center and its boundaries as \textbf{value}. Also, coordinates on Z axis are removed since they are shared among all rooms. A comparison is shown in \autoref{lst:origjson} and \autoref{lst:modjson}. This operation has been performed with the \code{Python} script shown in \autoref{lst:script}.
 
 \noindent\begin{minipage}{0.425\textwidth}
 \noindent\begin{lstlisting}[
@@ -85,16 +85,16 @@ But, because this JSON file was written as a \textbf{list of dictionaries}, it w
 \subsection{Correct waypoint coordinates}
 \label{sub:waypoints}
 
-In order to generate those waypoints inside the JSON file, Filippo used the same mesh described in \autoref{sub:map}, and, as already discussed, it does not match perfectly the real environment, and furthermore, the navigation map is rotated with respect to the mesh.
+In order to generate those waypoints inside the JSON file, Filippo used the same mesh described in \autoref{sub:map}, and, as already discussed, it does not match perfectly the real environment. Furthermore, the navigation map is rotated with respect to the mesh.
 
-So, using \textit{Blender} \cite{blender}, after loading both mesh and map, some modifications that lead to a better result has be found: by turning the mesh by \textbf{135 sexagesimal degrees counterclockwise} around the Z axis, scaling (up) the long side (Y axis) of the mesh \textbf{1.0925 times}, and translating 6.8210 meters along the short side (X axis) and \textbf{8.7180 meters} along the long side (Y axis). Luckily, when applying these transformations on the entire mesh you do it on its own points, and apply them on these waypoints in the JSON file is the same, without needing to repeat the annotation process from the beginning. These \textit{transformations} have been performed (?) with the Python script in \autoref{lst:script}
+So, using \textit{Blender} \cite{blender}, after loading both mesh and map, some \textbf{modifications} that lead to a \textbf{better result} have been found: \textbf{turn} the mesh around the Z axis, \textbf{scale} it up the long side (Y axis), and \textbf{translate} it along both sides. Luckily, when applying these transformations on the entire mesh, it is like doing it on those JSON waypoints, without needing to repeat the annotation process from the beginning. These \textit{transformations} have been performed with the Python script showed in \autoref{lst:script}
 
 \applymulticoltrue
 
 \noindent\begin{lstlisting}[
     language=Python,
     style=PythonStile,
-    caption={Python script used to transform waypoint coordinates},
+    caption={Python example script used to transform waypoint coordinates},
     label={lst:script}]
 ...
 import numpy as np
@@ -126,7 +126,7 @@ for obj in original_data:
 
 \applymulticolfalse
 
-Rotation and scale matrices are calculated and fused together. Then(, as described in \autoref{sub:json} (?),) the JSON structure is changed with dictionaries and each value of its corresponding key is transformed by applying the rotation-scale matrix and the translation vector. At the end, with \code{[0:2]}, only x and y coordinates are kept, since we are using a 2D navigation map.
+Rotation and scale matrices are calculated and \textbf{fused} together. Then, as described in \autoref{sub:json}, the JSON structure is \textbf{changed} with dictionaries and each value of its corresponding key is transformed by applying the rotation-scale matrix and the translation vector. At the end, with \code{[0:2]}, only x and y coordinates are kept.
 
 \subsection{Remove stub nodes from execution}
 
@@ -141,7 +141,7 @@ Four nodes have been created and are started together to let the robot moves aut
     \item \textbf{two planning clients} (\code{ugv\_move}\footnote{\label{fn:node}Node name is equal to action name} and \code{ugv\_transporting\_uav\_move}\footnoteref{fn:node}): \textit{action executor clients listening for next action to complete}
 \end{itemize}
 
-The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be found in Attachment \ref{cha:deepening}. % change name to attachment (?)
+The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be found in Attachment \ref{cha:deepening}.
 
 \begin{figure}[h]
     \centering
@@ -176,8 +176,6 @@ When it receives a request, it returns the \textbf{current position} of the robo
 Thanks to \code{tf\_echo} node \cite{tfexample} used as a template\footnote{If you follow the documentation, the process to get the transformation between two frames not directly connected, it will not work. The only node doing this and also working is \code{tf\_echo}.}, it was possible to obtain the correct transformation, \textbf{fusing} the required two.
 
 \subsection{Planning clients}
-
-%inserire immagine codice (?)
 
 It is an \textbf{action client} (called \code{ActionExecutorClient}), coming from \code{plansys2\_executor} (cite (?)) package, of \code{plansys2\_msgs::action::ExecuteAction} action: it means that it connect to its server (called \code{ActionExecutor}) waiting for a \textbf{new goal} to reach. When it received a new goal is responsible for completing it, and at the same time he has to return \textbf{continuous feedback
 } with the current percentage of completion, until the goal is \textbf{reached} (100\% completion).
