@@ -1,20 +1,20 @@
 \chapter{Planning integration} % add folder structure
 \label{cha:planningbridge}
 
-This chapter aims to \textbf{integrate} the planning part developed by \textit{Filippo Rossi}\footnote{His entire project is described in \autoref{sub:planning}} \cite{fr}. What already discussed in the previous chapters leads to a \textbf{working} version of the robot (it is able to move around), but does not have any practical use, because you need to set \textbf{where} you want the robot to go \textbf{every time}. This is the goal of this chapter: add some \textbf{missions control} (?), to give the robot some tasks it has to complete, without the needing of any \textbf{low-level human interaction}.
+This chapter aims to \textbf{integrate} the planning part developed by \textit{Filippo Rossi}\footnote{His entire project is described in \autoref{sub:planning}}\cite{fr}. What has already been discussed in the previous chapters leads to a \textbf{working} version of the robot (it is able to move around), but has no practical use, because you need to set \textbf{where} you want the robot to go \textbf{every time}. This is the goal of this chapter: add some \textbf{mission controls}, to give the robot some tasks it has to complete, without the need for any \textbf{low-level human interaction}.
 
 \section{Modifications from original planning}
 
-When the planning was developed, Filippo could not receive any feedback, since we were facing some other challenges (i.e. make robots move autonomously). So, in response, the planning is more like a \textbf{generic workspace} to which we can add some \textbf{modifications} to meet our specific needs; then we can attach the \textbf{adapted workspace} to what was already developed, since \acrshort{ros} is \textbf{modular}.
+When the planning was developed, Filippo could not receive any feedback, since we were facing other challenges (i.e. make robots move independently). So, in response, the planning is more like a \textbf{generic workspace} to which we can add some \textbf{modifications} to meet our specific needs; then we can attach the \textbf{adapted workspace} to what has been already developed.
 
 % aggiungere entrance tag per entrata porta, dato che non è ben definita
 
 \subsection{Change JSON structure}
 \label{sub:json}
 
-Thanks to Filippo's \textbf{waypoints extractor} and \code{cvat} \textbf{annotation software}, all the coordinate information can be found in a \textbf{JSON file}: when the robot is told to move in a certain room, only step to take is \textbf{searching} its name in the file and reading its \textbf{coordinates}.
+Thanks to Filippo's \textbf{waypoints extractor} and \code{cvat} \textbf{annotation software}, all the coordinate information can be found in a \textbf{JSON file}: when the robot is told to move to a certain room, the only step to take is \textbf{looking} for its name in the file and read the \textbf{coordinates}.
 
-But, because this JSON file was written as a \textbf{list of dictionaries}, it would be required to iterate \textbf{over every element} and search for the one with the \textbf{requested name}, and when they match, it is possible to get the coordinates. Instead, for an easier use, a dictionary is created with the name of the room as \textbf{key} and the coordinates of its center and its boundaries as \textbf{value}. Also, coordinates on Z axis are removed since they are shared among all rooms. A comparison is shown in \autoref{lst:origjson} and \autoref{lst:modjson}. This operation has been performed with the \code{Python} script shown in \autoref{lst:script}.
+But, because this JSON file was written as a \textbf{list of dictionaries}, you would need to iterate \textbf{on each element} and search for the one with the \textbf{desired name}, and when they match, you can the coordinates. Instead, for easier use, a dictionary was created with the name of the room as a \textbf{key} and the coordinates of its center and its boundaries as a \textbf{value}. Also, the coordinates on the Z axis have been removed because they are the same for all rooms. A comparison is shown in \autoref{lst:origjson} and \autoref{lst:modjson}. This was done with the \code{Python} script shown in \autoref{lst:script}.
 
 \noindent\begin{minipage}{0.425\textwidth}
 \noindent\begin{lstlisting}[
@@ -85,9 +85,9 @@ But, because this JSON file was written as a \textbf{list of dictionaries}, it w
 \subsection{Correct waypoint coordinates}
 \label{sub:waypoints}
 
-In order to generate those waypoints inside the JSON file, Filippo used the same mesh described in \autoref{sub:map}, and, as already discussed, it does not match perfectly the real environment. Furthermore, the navigation map is rotated with respect to the mesh.
+To generate those waypoints in the JSON file, Filippo used the same mesh described in \autoref{sub:map}, and, as already discussed, it does not exactly match the real environment. Furthermore, the navigation map is slightly rotated with respect to the mesh.
 
-So, using \textit{Blender} \cite{blender}, after loading both mesh and map, some \textbf{modifications} that lead to a \textbf{better result} have been found: \textbf{turn} the mesh around the Z axis, \textbf{scale} it up the long side (Y axis), and \textbf{translate} it along both sides. Luckily, when applying these transformations on the entire mesh, it is like doing it on those JSON waypoints, without needing to repeat the annotation process from the beginning. These \textit{transformations} have been performed with the Python script showed in \autoref{lst:script}
+So, using \textit{Blender}\cite{blender}, after loading both mesh and map, some \textbf{changes} that lead to a \textbf{better result} were found: \textbf{rotate} the mesh around the Z axis, \textbf{scale} it up on the long side (Y axis), and \textbf{move} it along both sides. Luckily, when you apply these transformations to the entire mesh, it is like doing it on those waypoints, without having to repeat the annotation process from the beginning. These \textit{transformations} have been performed with the Python script shown in \autoref{lst:script}
 
 \applymulticoltrue
 
@@ -126,19 +126,19 @@ for obj in original_data:
 
 \applymulticolfalse
 
-Rotation and scale matrices are calculated and \textbf{fused} together. Then, as described in \autoref{sub:json}, the JSON structure is \textbf{changed} with dictionaries and each value of its corresponding key is transformed by applying the rotation-scale matrix and the translation vector. At the end, with \code{[0:2]}, only x and y coordinates are kept.
+The rotation and scale matrices are calculated and \textbf{fused} together. Next, as described in \autoref{sub:json}, the JSON structure is \textbf{changed} with dictionaries and each value of its corresponding key is transformed by applying the rotation-scale matrix and the translation vector. At the end, with \code{[0:2]}, only the x and y coordinates are retained.
 
 \subsection{Remove stub nodes from execution}
 
-Currently, the only actions supported are \code{ugv\_move} and \code{ugv\_transporting\_uav\_move}: although the name is different, they share the \textbf{same code} (they have been separated for planning reasons). For testing purposes, in the original planning some nodes were added to simulate \acrshort{ugvs} and \acrshort{uavs}: they were started at the beginning of the execution, but now these two have their real implementation, so the \textbf{stub ones} have been removed from the launch.
+Currently, the only actions supported are \code{ugv\_move} and \code{ugv\_transporting\_uav\_move}: although the name is different, they share the \textbf{same code} (they have been separated for planning reasons). For testing purposes, in the original planning, some nodes were added to simulate \acrshort{ugvs} and \acrshort{uavs} actions: they were started at the beginning of the execution, but now these two have their real implementation, so the \textbf{stub ones} have been removed from the launch.
 
 \section{Task executors}
 
-Four nodes have been created and are started together to let the robot moves autonomously: 
+Four nodes were created and a started together to allow the robot to move autonomously: 
 \begin{itemize}
-    \item \arguments{navigation client}{service and action client that sets the navigation goal when coordinates are received}
-    \item \arguments{pose server}{service server responsible for returning the current pose of the robot when requested}
-    \item \textbf{two planning clients} (\code{ugv\_move}\footnote{\label{fn:node}Node name is equal to action name} and \code{ugv\_transporting\_uav\_move}\footnoteref{fn:node}): \textit{action executor clients listening for next action to complete}
+    \item \arguments{navigation client}{service and action client that sets the navigation goal when coordinates are received};
+    \item \arguments{pose server}{service server responsible for returning the robot's current pose when prompted};
+    \item \textbf{two planning clients} (\code{ugv\_move}\footnote{\label{fn:node}Node name is equal to the action name} and \code{ugv\_transporting\_uav\_move}\footnoteref{fn:node}): \textit{action executor clients listening for the next action to be completed};
 \end{itemize}
 
 The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be found in Attachment \ref{cha:deepening}.
@@ -167,23 +167,22 @@ The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be
 
 \subsection{Navigation client}
 
-This node is both a \textbf{service server} and an \textbf{action client}: the first one is used to receive the coordinates from the planning clients, and then, using the second one, it connects to the navigation action server and sets the just received goal. It is called only \textbf{once}, when a new task is created.
+This node is both a \textbf{service server} and an \textbf{action client}: the first one is used to receive the coordinates from the planning clients, and then, using the second, it connects to the navigation action server and sets the goal as soon as it received. It is called only \textbf{once}, when a new task is created.
 
 \subsection{Pose server}
 \label{sub:pose}
 
-When it receives a request, it returns the \textbf{current position} of the robot, which is \code{base\_link} position in the \code{map} frame. In order to achieve it, some other calculations need to be done: we are interested in \code{base\_link} frame, but the only transformation referring (to it) is the \code{odom} one, not the same used for waypoint coordinates. There is the need to express it from the \code{map} frame perspective, and luckily such a transformation (\code{map} $\rightarrow$ \code{odom}) is available thanks to \acrshort{amcl} node. 
-Thanks to \code{tf\_echo} node \cite{tfexample} used as a template\footnote{If you follow the documentation, the process to get the transformation between two frames not directly connected, it will not work. The only node doing this and also working is \code{tf\_echo}.}, it was possible to obtain the correct transformation, \textbf{fusing} the required two.
+When it receives a request, it returns the \textbf{current position} of the robot, which is \code{base\_link} position in the \code{map} frame. To achieve it, we need to do more calculations: we are interested in \code{base\_link} frame, but the only transformation that refers to it is the \code{odom} one, not the same used for waypoint coordinates. There is a need to express it from the \code{map} frame perspective, and luckily such a transformation (\code{map} $\rightarrow$ \code{odom}) is available thanks to \acrshort{amcl} node. 
+Thanks to \code{tf\_echo} node\cite{tfexample} used as a template, it was possible to obtain the correct transformation, \textbf{fusing} the required two.
 
 \subsection{Planning clients}
 
-It is an \textbf{action client} (called \code{ActionExecutorClient}), coming from \code{plansys2\_executor} (cite (?)) package, of \code{plansys2\_msgs::action::ExecuteAction} action: it means that it connect to its server (called \code{ActionExecutor}) waiting for a \textbf{new goal} to reach. When it received a new goal is responsible for completing it, and at the same time he has to return \textbf{continuous feedback
-} with the current percentage of completion, until the goal is \textbf{reached} (100\% completion).
+It is an \textbf{action client} (called \code{ActionExecutorClient}), coming from the \code{plansys2\_executor} (cite (?)) package, of \code{plansys2\_msgs::action::ExecuteAction} action: it means that it connects to its server (called \code{ActionExecutor}) waiting for a \textbf{new goal} to reach. When it received the new goal it is responsible for completing it, and it also he has to return \textbf{continuous feedback} with the current percentage of completion, until the goal is \textbf{reached} (100\% completion).
 
-When a new task has been created and started, the action server would call the \code{do\_work()} method of the designed client, to let it know a new job needs to be completed.
-Inside this method the client transforms the \textbf{room name} (passed as goal) in \textbf{coordinates} and, if the goal was not already set, it passes it to the navigation client, making use of a custom service. After that, it asks \textbf{its current position} to the pose server (with another service) and uses it to set both the \textbf{initial and current position} (because the robot is not moving yet, the current position is the same as the initial one); using them, it returns a \textbf{percentage of completion} (0\%) to the planning server.
+When a new task is created and started, the action server will continue to call the \code{do\_work()} method of the designed client, to let it know that a new job must to be completed.
+Within this method the client transforms the \textbf{room name} (passed as goal) into \textbf{coordinates} and, if the goal was not already set, it passes it to the navigation client, making use of a custom service. After that, it asks for \textbf{its current position} to the pose server (with another service) and uses it to set both the \textbf{initial} and \textbf{current position} (because the robot is not moving yet, the current position is the same as the initial one); then it returns a  0\% \textbf{percentage of completion} to the planning server.
 
-The \code{do\_work()} method, then, is called \textbf{continuously} until the task is completed to give some feedback: now the initial position is already set (and as a result also the goal), so it continues to ask only for its current position, to calculate the \textbf{euclidean distance} from the initial position and then, it returns a new percentage of completion.
+Then, the \code{do\_work()} method, is called \textbf{continuously} until the task is completed to give some feedback: now the initial position is already set (and as a result also the goal), so it keeps asking only its current position, to calculate the \textbf{euclidean distance} from the initial position, and then, it returns a new percentage of completion.
 
 \begin{wrapfigure}{r}{0.25\textwidth}
     \begin{equation*}
@@ -193,5 +192,4 @@ The \code{do\_work()} method, then, is called \textbf{continuously} until the ta
     \label{eq:percentage}
 \end{wrapfigure} 
 
-Because the path used to reach the destination might not be \textbf{a straight line} and the distance employed is the euclidean one, it could happen the current distance is \textbf{greater} than the initial one: 
-in this case, they are swapped to keep 0\% as the \textbf{lower bound} of completion, otherwise it would become negative. Choosing the maximum between percentage of completion and zero would lead to \textbf{loss of information}, and it is the reason why it has not been used. This can be clearly seen in \autoref{eq:percentage}.
+Because the path used to reach the destination might not be \textbf{a straight line} and the distance employed is the euclidean one, it may happen that the current distance is \textbf{greater} than the initial one: in this case, they are swapped to keep 0\% as the \textbf{lower bound} of completion, otherwise it would become negative. Choosing the maximum between the percentage of completion and zero would lead to \textbf{information loss}, and it is the reason why it was not used. The actual formula can be clearly seen in \autoref{eq:percentage}.
