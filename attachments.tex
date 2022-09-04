@@ -7,7 +7,7 @@
   \noindent\begin{lstlisting}[language=C, style=CStyleTextWidth]
 while (rclcpp::ok() && !listener_.buffer_.canTransform("map", "base_link", tf2::TimePoint())) rate.sleep();
 
-geometry_msgs::msg::TransformStamped transform_ = listener_.buffer_.lookupTransform("map", "base_link", tf2::TimePoint());
+geometry_msgs::msg::TransformStamped transform_ = listener_.buffer_.lookupTransform("map",  "base_link", tf2::TimePoint());
 
 response->x = transform_.transform.translation.x;
 response->y = transform_.transform.translation.y;
@@ -51,7 +51,7 @@ response->success = true;
       \node [block, above=3cm of plan-clients] (plan-server) {PLANNING SERVER};
       \node [block, right=7.9cm of plan-server] (nav-server) {NAVIGATION SERVER};
 
-      \draw [arrow] (plan-server) -- node [left] {plansys2\_msgs} node [right] {::msg::ActionExecution(?)} (plan-clients);
+      \draw [arrow] (plan-server) -- node [left] {plansys2\_msgs} node [right] {::msg::ActionExecution} (plan-clients);
       \draw [arrow] (nav-client) -- node [left] {nav2\_msgs::action} node [right] {::NavigateToPose} (nav-server);
       \draw [arrow] (do-work.7) -- node [above] {float32 x, y} (nav-client.148);
       \draw [arrow] (nav-client.154) -- node [below] {bool success} (do-work.353);
@@ -140,3 +140,66 @@ if (progress_ < 0.95) {
 std::cout << "\r\e[K" << std::flush;
 std::cout << "Moving ... [" << std::min(100.0, progress_ * 100.0) << "%]" << std::flush;
   \end{lstlisting}
+
+\chapter{How to}
+
+As described in \autoref{cha:techstack}, \code{docker compose} has been used in order to easily \textbf{deploy} the system. However, \textbf{several configurations} are available (e.g. run everything on the robot, run only robot nodes on the robot, run \acrshort{slam}, run simulation), and you should edit the \code{docker-compose.yaml} file each time to meet your needs, or have multiple files containing different configurations. To simplify it, some Python scripts have been created:
+
+\begin{itemize}
+  \item \code{start.py}
+  \item \code{attach.py}
+  \item \code{stop.py}
+\end{itemize}
+
+\subsection{start.py}
+
+\begin{lstlisting}[language=bash, style=bashStyle, caption={Generates a \code{docker-compose.yaml} file from a template and runs it}]
+usage: start.py [-h] [-r] [-g] [-n] [-s] [-m] [-p] [-d]
+
+start desired nodes containers
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -r, --robot        start robot nodes
+  -g, --gazebo       start simulation nodes
+  -n, --navigation  start navigation nodes
+  -s, --slam         start slam nodes
+  -m, --map          save slam map
+  -p, --planning     start planning nodes
+  -d, --detached     run containers in detached mode
+\end{lstlisting}
+
+\noindent You can decide \textbf{which nodes} you want to run by passing the corresponding arguments\footnote{Some of them may be mutually exclusive}. Note that each time, before running the actual nodes, the workspace will be \textbf{recompiled}, to include any latest changes.
+
+\subsection{attach.py}
+
+\begin{lstlisting}[language=bash, style=bashStyle]
+usage: attach.py [-h] [-r | -b | -g | -n | -s | -m | -p | -u | -w]
+
+attach to a desired container
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -r, --robot        attach to robot container
+  -b, --bridge       attach to ROS1-ROS2 bridge node
+  -g, --gazebo       attach to simulation container
+  -n, --navigation  attach to navigation container
+  -s, --slam         attach to slam container
+  -m, --map          attach to map container
+  -p, --planning     attach to planning container
+  -u, --ugv          attach to UGV actions container
+  -w, --webserver    attach to webserver container  
+\end{lstlisting} 
+
+\noindent It is possible to attach to only one container at a time, since each argument is \textbf{mutually exclusive}. This is useful to \textbf{debug} the system, or to \textbf{run commands} inside the container.
+
+\subsection{stop.py}
+
+\begin{lstlisting}[language=bash, style=bashStyle]
+usage: remove.py [-h]
+
+remove running or stopped containers
+
+optional arguments:
+  -h, --help  show this help message and exit
+\end{lstlisting}

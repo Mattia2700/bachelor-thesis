@@ -138,7 +138,7 @@ Four nodes were created and a started together to allow the robot to move autono
 \begin{itemize}
     \item \arguments{navigation client}{service and action client that sets the navigation goal when coordinates are received};
     \item \arguments{pose server}{service server responsible for returning the robot's current pose when prompted};
-    \item \textbf{two planning clients} (\code{ugv\_move}\footnote{\label{fn:node}Node name is equal to the action name} and \code{ugv\_transporting\_uav\_move}\footnoteref{fn:node}): \textit{action executor clients listening for the next action to be completed};
+    \item \textbf{two planning clients} (\code{ugv\_move}\footnote{\label{fn:node}Node name is equal to the action name} and \code{ugv\_transporting\_uav\_move}\footnoteref{fn:node}): \textit{action executor clients listening for the next action to be completed}.
 \end{itemize}
 
 The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be found in Attachment \ref{cha:deepening}.
@@ -152,7 +152,7 @@ The entire workflow is shown in \autoref{fig:bridge}. A more detailed one can be
         \node [block, right=of nav-server] (nav-client) {NAVIGATION CLIENT};
         \node [block, right=of plan-clients] (pose-server) {POSE SERVER};
 
-        \draw [arrow] (plan-server) -- node [above] {plansys2\_msgs::msg} node [below] {::ActionExecution(?)} (plan-clients);
+        \draw [arrow] (plan-server) -- node [above] {plansys2\_msgs::msg} node [below] {::ActionExecution} (plan-clients);
         \draw [arrow] (nav-client) -- node [above] {nav2\_msgs::action} node [below] {::NavigateToPose} (nav-server);
         \draw [arrow] (plan-clients.250) -- node [left] {float32 x, y} (nav-client.110);
         \draw [arrow] (nav-client.70) -- node [right] {bool success} (plan-clients.290);
@@ -177,7 +177,7 @@ Thanks to \code{tf\_echo} node\cite{tfexample} used as a template, it was possib
 
 \subsection{Planning clients}
 
-It is an \textbf{action client} (called \code{ActionExecutorClient}), coming from the \code{plansys2\_executor} (cite (?)) package, of \code{plansys2\_msgs::action::ExecuteAction} action: it means that it connects to its server (called \code{ActionExecutor}) waiting for a \textbf{new goal} to reach. When it received the new goal it is responsible for completing it, and it also he has to return \textbf{continuous feedback} with the current percentage of completion, until the goal is \textbf{reached} (100\% completion).
+It is an \textbf{action client} (called \code{ActionExecutorClient}), coming from the \code{plansys2\_executor} package, of \code{plansys2\_msgs::action::ExecuteAction} action: it means that it connects to its server (called \code{ActionExecutor}) waiting for a \textbf{new goal} to reach. When it received the new goal it is responsible for completing it, and it also he has to return \textbf{continuous feedback} with the current percentage of completion, until the goal is \textbf{reached} (100\% completion).
 
 When a new task is created and started, the action server will continue to call the \code{do\_work()} method of the designed client, to let it know that a new job must to be completed.
 Within this method the client transforms the \textbf{room name} (passed as goal) into \textbf{coordinates} and, if the goal was not already set, it passes it to the navigation client, making use of a custom service. After that, it asks for \textbf{its current position} to the pose server (with another service) and uses it to set both the \textbf{initial} and \textbf{current position} (because the robot is not moving yet, the current position is the same as the initial one); then it returns a  0\% \textbf{percentage of completion} to the planning server.

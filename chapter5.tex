@@ -38,8 +38,8 @@ This makes use of \textbf{behavior trees} to define the actions to be performed 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.9\textwidth]{images/bt-alpha.png}
-    \caption{Currently used behavior tree. Groot lets you visualize it, also in real-time.\cite{groot}}
+    \includegraphics[width=\textwidth]{images/bt-alpha.png}
+    \caption{Currently used behavior tree. Groot lets you visualize it, also in real-time\cite{groot}.}
 \end{figure}
 
 \subsection{Planner Server}
@@ -56,11 +56,11 @@ It generates \textbf{command velocities} for the wheels using computed path from
 
 \subsection{Lifecycle Manager}
 
-All the previous nodes interface with \textbf{Lifecycle Manager}, which brings \acrshort{ros}2 \textbf{managed nodes}\footnote{\textit{A managed life cycle for nodes allows greater control over the state of ROS system. [...] a managed node presents a known interface, executes according to a known life cycle state machine, and otherwise can be considered a black box.}\cite{lifecycle}} concept to the navigation stack: in such a manner, before nodes begin their execution, it \textbf{checks} if all have been \textbf{launched correctly} and are ready to start, to avoid unexpected behaviors.
+All the previous nodes interface with \textbf{Lifecycle Manager}, which brings \acrshort{ros}2 \textbf{managed nodes}\footnote{\textit{A managed life cycle for nodes allows greater control over the state of ROS system. [...] a managed node presents a known interface, executes according to a known life cycle state machine, and otherwise can be considered a black box}\cite{lifecycle}} concept to the navigation stack: in such a manner, before nodes begin their execution, it \textbf{checks} if all have been \textbf{launched correctly} and are ready to start, to avoid unexpected behaviors.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/uml_lifecycle_manager}
+    \includegraphics[width=0.9\textwidth]{images/uml_lifecycle_manager}
     \caption{Sequence of service calls when startup is requested}
 \end{figure}
 
@@ -81,6 +81,6 @@ When it comes to setting up navigation properties, the most important is \code{c
 
 To automatically display the robot and environment on \acrshort{rviz}, a configuration file has been created: it keeps track of the map, costmaps, robot shape (described in the \acrshort{urdf} file as discussed in \autoref{sub:robot}), lidar and odom frame. 
 
-The map currently in use was created using \acrshort{slam}, and since it is no longer possible to graphically control the robot with \acrshort{rviz} when doing so, another way must be found: the solution is the \code{joy} driver package, which makes an \textbf{Xbox controller} capable of setting wheels velocity over \code{cmd\_vel} topic (via \textbf{Bluetooth}).
+The map currently in use was created using \acrshort{slam}, and since it is quite hard to graphically control the robot with \acrshort{rviz} when doing so\footnote{The map is currently being generated and it may happen that the robot hits a wall when specifying a goal position, because it is not already aware of rooms boundaries}, another way must be found: the solution is the \code{joy} driver package, which makes an \textbf{Xbox controller} capable of setting wheels velocity over \code{cmd\_vel} topic (via \textbf{Bluetooth}).
 
 Everything is then put together inside a \textbf{launch file} (a custom Python script); inside it are described which \textbf{nodes} should be started, and also the \textbf{parameters} that can be passed from command line (overriding their default value). For example, if you want to start a simulation, you need to set the \code{use\_simulator} parameter to \textit{true} (normally it is \textit{false}); the same goes for \textbf{disabling} the Gazebo \acrfull{gui}: you can set \textbf{headless} to \textit{true}. These parameters, as shown above, can be used to perform \textbf{conditional checks}, in order to decide whether a node should be started or not.

@@ -1,7 +1,7 @@
-\chapter{Results and Future works}
+\chapter{Results and Future work}
 \label{cha:futureworks}
 
-\section{Conclusion}
+\section{Conclusions}
 
 In the end, the robot, whether real o simulated, is able to \textbf{navigate} the environment, detect \textbf{obstacles} and take actions to \textbf{avoid} them. Moreover, the robot can move \textbf{indipendently} from one room to another, without having to manually control it (setting the destination). When the drones project is also completed and tested, it will be possible to \textbf{combine} everything together and have a \textbf{complete system} as originally designated.
 
@@ -19,7 +19,7 @@ Here is a possible list of missing or incomplete features that can be implemente
 
 \item An interesting feature that could be supported, as soon as fully implemented in the planning system, is \textbf{live positioning}: in this way you could have a \textbf{real-time position feedback} even in the web interface; the only change is to return the position of the robot\footnote{Obtained from the pose server, described in \autoref{sub:pose}} along with the percentage completion of the current task.
 
-\item Talking about the navigation part, the obstacle avoidance could be enhanced, especially in the case of dynamic obstacles, because the robot sometimes takes some time to understand what is happening, and may end up colliding with them. A possible solution would be to increase the minimum distance that should be kept between the robot and the unexpected obstacle, with also some recovery action, such as going back a little and replanning the path. A problem could also be the \code{ros1\_bridge} that adds some delay in the exchange of messages between \acrshort{ros}1 and \acrshort{ros}2, ending up receiving lidar data not instantly.
+\item Talking about the navigation part, the \textbf{obstacle avoidance} could be enhanced, especially in the case of \textbf{dynamic obstacles}, because the robot sometimes takes some time to understand what is happening, and may end up \textbf{colliding} with them. A problem could also be the \code{ros1\_bridge} that adds some delay in the exchange of messages between \acrshort{ros}1 and \acrshort{ros}2, ending up receiving lidar data not instantly; rewrite \acrshort{ros}1 nodes in \acrshort{ros}2 nodes may resolve this issue, by getting rid of the bridge.
 
 \item Improve the map, creating a custom one for simulation and keeping the current one for the real world. If a better mesh is available, \acrshort{slam} and waypoint extraction in the simulation and in the real world might be the same, and then you would not need to \textbf{switch} between them every time.
 

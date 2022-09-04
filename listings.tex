@@ -77,9 +77,11 @@
     breaklines=true,
     linewidth=\textwidth,
     showstringspaces=false,
+    morekeywords=[2]{canTransform, lookupTransform},
     basicstyle=\small\ttfamily,
     commentstyle=\color{Gray},
     keywordstyle=\color{Red},
+    keywordstyle=[2]\color{Purple},
     stringstyle=\color{RoyalBlue},
 }
 
@@ -89,9 +91,11 @@
     keepspaces=true,
     breaklines=true,
     showstringspaces=false,
+    morekeywords=[2]{send_goal},
     basicstyle=\small\ttfamily,
     commentstyle=\color{Gray},
     keywordstyle=\color{Red},
+    keywordstyle=[2]\color{Purple},
     stringstyle=\color{RoyalBlue},
 }
 
@@ -102,9 +106,11 @@
     keepspaces=true,
     breaklines=true,
     showstringspaces=false,
+    morekeywords=[2]{this, GOAL_INDEX, room_goal_, goal_position_, future, result, get_pose, continue_work, progress_},
     basicstyle=\small\ttfamily,
     commentstyle=\color{Gray},
     keywordstyle=\color{Red},
+    keywordstyle=[2]\color{Purple},
     stringstyle=\color{RoyalBlue},
 }
 
@@ -121,7 +127,23 @@
     columns=flexible,
     showstringspaces=false,
     commentstyle=\color{gray}\upshape,
-    stringstyle=\color{Orange},
+    stringstyle=\color{ForestGreen},
     identifierstyle=\color{Red},
+    keywordstyle=\color{Black}
+}
+
+\lstdefinelanguage{bash}{
+    morestring=[b]",
+    morecomment=[l]{\#}
+}
+
+\lstdefinestyle{bashStyle}{
+    frame=tb,
+    language=bash,
+    basicstyle=\ttfamily,
+    columns=flexible,
+    showstringspaces=false,
+    commentstyle=\color{gray}\upshape,
+    stringstyle=\color{Blue},
     keywordstyle=\color{Black}
 }

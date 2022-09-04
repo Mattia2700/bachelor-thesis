@@ -3,19 +3,61 @@
 
 \section{Summary}
 
-The goal of this project, as described in abstract, aims to develop a complete system for \textbf{surveillance purposes} using ground robots, but also flying ones. Since the project is quite complex, it is \textbf{shared} between other two students, with each one of us focusing on his subproject. It is subdivided as follows: 
+The goal of this project, as described in abstract, aims to develop a complete system for \textbf{surveillance purposes} using ground robots, but also flying ones. Since the project is quite complex, it is \textbf{shared} between other two students, with each one of us focusing on his subproject.
+
+\bigskip
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \node[title] (webinterface-inner) {Web interface};
+    \node[rectangle, draw, rounded corners, fit=(webinterface-inner)] (webinterface) {};
+    \node[intro, left=of webinterface] (hidden-task-1) {};
+    \node[intro, right=of webinterface] (hidden-task-2) {};
+    \node[cloud, below=4em of webinterface, draw, aspect=2] (planning) {Planning};
+
+    \node[mine, left=of planning] (ugv) {UGVs controller};
+    \node[info, above=3em of ugv] (ugv-data) {\textbf{Initial pose \& Lidar data}};
+    \node[intro, below=3em of ugv] (ugv-image) {\includegraphics[width=0.2\textwidth]{images/ugv}};
+
+    \node[title, right=of planning] (uav) {UAVs controller};
+    \node[info, above=3em of uav] (uav-data) {\textbf{Motion-capture \& GPS data}};
+    \node[intro, below=3em of uav] (uav-image) {\includegraphics[width=0.2\textwidth]{images/uav}};
+
+    \draw[arrow] (webinterface) -- node [right] {\textit{interacts with}} (planning);
+    \draw[arrow] (hidden-task-1) -- node [above] {tasks} (webinterface);
+    \draw[arrow] (hidden-task-2) -- node [above] {tasks} (webinterface);
+
+    \draw[arrow] (planning) -- node [above] {\textit{dispatches to}} (ugv);
+
+    \draw[arrow] (ugv-data) -- node [left] {\textit{is passed to}} (ugv);
+    \draw[arrow] (ugv) -- node [right] {\textit{commands}} (ugv-image);
+
+    \draw[arrow] (planning) -- node [above] {\textit{dispatches to}} (uav);
+
+    \draw[arrow] (uav-data) -- node [right] {\textit{is passed to}} (uav);
+    \draw[arrow] (uav) -- node [left] {\textit{commands}} (uav-image);
+
+  \end{tikzpicture}
+  \caption{Project architecture. The node with the thick border is the one discussed in this thesis}
+  \label{fig:project}
+\end{figure}
+
+\bigskip
+
+As shown in \autoref{fig:project}, it is subdivided as follows: 
 
 \begin{itemize}
-  \item a \textbf{planning system}, responsible for dispatching surveillance tasks to \acrfull{ugvs} and/or \acrfull{uavs} the best possible way, according to their battery charge, providing them with some waypoints to reach; 
-  \item a solution to independently control \textbf{drones} (\acrshort{uavs});
-  \item a solution to independently control ground robots, avoiding \textbf{obstacles} (\acrshort{ugvs});
+  \item a \textbf{planning system} with a \textbf{web interface}, responsible for dispatching surveillance tasks to \acrfull{ugvs} and/or \acrfull{uavs} the best possible way, according to their battery charge, providing them with some waypoints to reach; 
+  \item a solution to independently control drones (\textbf{\acrshort{uavs} controller});
+  \item a solution to independently control ground robots, avoiding obstacles (\textbf{\acrshort{ugvs} controller});
 \end{itemize}
 
-Everything is developed using \acrshort{ros}2, that gives us the opportunity to work \textbf{separately} on our subproject, and thanks to its \textbf{modularity}, in the end we will just have to put them all together.
+Everything is developed using \acrfull{ros}2, that gives us the opportunity to work \textbf{separately} on our subproject, and thanks to its \textbf{modularity}, in the end we will just have to put them all together.
 
 The reason why I chose the internship and this resulting thesis, is driven by my \textbf{growing interest} in this topic: just a few months before taking part in this work, I attended a course on \textit{robotic fundamentals}\cite{intro2robotics} where we also developed a project quite similar to this, but with a robotic manipulator.
 
-For me, the intriguing part is the possibility of giving some inanimate object, like a wheeled robot or a manipulator, something that could be described as \textbf{intelligence}, the ability to perform certain tasks in response to others, and figure out which ones are the \textbf{best suited} for each particular situation. The challenges I decided to face are: working for the first time on a \textbf{mobile robot} and choosing the \textbf{new version} of ROS, with some improvements compared to the previous one, but with less support from the community.
+For me, the intriguing part is the possibility of giving some inanimate object, like a wheeled robot or a manipulator, something that could be described as \textbf{intelligence}, the ability to perform certain tasks in response to others, and figure out which ones are the \textbf{best suited} for each particular situation. The challenges I decided to face are: working for the first time on a \textbf{mobile robot} and choosing the \textbf{new version} of \acrshort{ros}, with some improvements compared to the previous one, but with less support from the community.
 
 \section{Other projects involved}
 
